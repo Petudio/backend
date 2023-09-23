@@ -11,9 +11,9 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Picture {
 
-    public Picture(Post post, String originalName, String path, PictureType pictureType) {
-        this.post = post;
-        post.addPicture(this);
+    public Picture(Bundle bundle, String originalName, String path, PictureType pictureType) {
+        this.bundle = bundle;
+        bundle.addPicture(this);
 
         this.originalName = originalName;
         this.path = path;
@@ -26,8 +26,8 @@ public class Picture {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
-    private Post post;
+    @JoinColumn(name = "bundle_id")
+    private Bundle bundle;
 
     private String originalName;
     private String path;
