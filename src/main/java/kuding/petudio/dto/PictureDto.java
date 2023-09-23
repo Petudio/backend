@@ -1,4 +1,4 @@
-package Kuding.petudio.dto;
+package kuding.petudio.dto;
 
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
