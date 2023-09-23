@@ -11,12 +11,12 @@ import java.util.List;
 @Service
 public class PictureService {
 
-    public MultipartFile imageRender(MultipartFile beforeImage) {
+    public MultipartFile pictureRender(MultipartFile beforeImage) {
         //AI알고리즘으로 이미지 생성, 생성된 이미지 return
         return null;//return afterImage
     }
 
-    public void storeImage(List<PictureDto> pictures) {
+    public void storePicture(List<PictureDto> pictures) {
 
     }
 }

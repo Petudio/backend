@@ -8,16 +8,16 @@ import java.util.List;
 
 @Entity
 @Getter
-public class Post {
+public class Bundle {
 
-    public Post(){}
+    public Bundle(){}
 
     @Id
     @GeneratedValue
-    @Column(name = "post_id")
+    @Column(name = "bundle_id")
     private Long id;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "bundle", cascade = CascadeType.ALL)
     private List<Picture> pictures = new ArrayList<>();
 
     public void addPicture(Picture picture) {
