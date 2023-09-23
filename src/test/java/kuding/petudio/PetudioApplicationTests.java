@@ -1,4 +1,4 @@
-package Kuding.petudio;
+package kuding.petudio;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

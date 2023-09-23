@@ -1,4 +1,4 @@
-package Kuding.petudio.domain;
+package kuding.petudio.domain;
 
 public enum PictureType {
     BEFORE, AFTER

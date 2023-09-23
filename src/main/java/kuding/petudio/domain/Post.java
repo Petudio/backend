@@ -1,8 +1,6 @@
-package Kuding.petudio.domain;
+package kuding.petudio.domain;
 
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;

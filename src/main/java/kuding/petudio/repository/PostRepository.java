@@ -1,6 +1,6 @@
-package Kuding.petudio.repository;
+package kuding.petudio.repository;
 
-import Kuding.petudio.domain.Post;
+import kuding.petudio.domain.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PostRepository extends JpaRepository <Post, Long> {
