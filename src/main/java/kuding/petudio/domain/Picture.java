@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-@Entity
+@Entity(name = "picture")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Picture {
