@@ -8,13 +8,13 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
+@Entity(name = "bundle")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Bundle {
 
     public Bundle(BundleType bundleType) {
-        like = 0;
+        likeCount = 0;
         this.bundleType = bundleType;
     }
 
@@ -29,7 +29,7 @@ public class Bundle {
     @Enumerated(EnumType.STRING)
     private BundleType bundleType;
 
-    private int like;
+    private int likeCount;
 
     public void addPicture(Picture picture) {
         pictures.add(picture);
