@@ -13,13 +13,11 @@ import org.springframework.web.multipart.MultipartFile;
 public class PictureServiceDto {
     private String originalName;
     private MultipartFile pictureFile;
-    private String path;
     private PictureType pictureType;
 
-    public PictureServiceDto(String originalName, MultipartFile pictureFile, String path, PictureType pictureType) {
+    public PictureServiceDto(String originalName, MultipartFile pictureFile, PictureType pictureType) {
         this.originalName = originalName;
         this.pictureFile = pictureFile;
-        this.path = path;
         this.pictureType = pictureType;
     }
 }
