@@ -1,18 +1,20 @@
 package kuding.petudio.service;
 
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.ObjectMetadata;
 import kuding.petudio.domain.Bundle;
 import kuding.petudio.domain.BundleType;
 import kuding.petudio.domain.Picture;
 import kuding.petudio.repository.BundleRepository;
-import lombok.Data;
+import kuding.petudio.service.dto.ServiceReturnBundleDto;
+import kuding.petudio.service.dto.ServiceParamPictureDto;
+import kuding.petudio.service.lowservice.PairPictureAndPictureServiceDto;
+import kuding.petudio.service.lowservice.AmazonService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,47 +26,53 @@ import java.util.UUID;
 public class BundleService {
 
     private final BundleRepository bundleRepository;
-    private final AmazonS3Client amazonS3Client;
-
-    @Value("${cloud.aws.s3.bucket}")
-    private String bucket;
+    private final AmazonService amazonService;
 
     @Autowired
-    public BundleService(BundleRepository bundleRepository, AmazonS3Client amazonS3Client) {
+    public BundleService(BundleRepository bundleRepository, AmazonService amazonService) {
         this.bundleRepository = bundleRepository;
-        this.amazonS3Client = amazonS3Client;
+        this.amazonService = amazonService;
+    }
+
+    /**
+     *
+     * @param pageOffset
+     * @param pageSize
+     * @return
+     * @throws IOException
+     */
+    @Transactional(readOnly = true)
+    public List<ServiceReturnBundleDto> findBundlesOrderByCreatedDate(int pageOffset, int pageSize) throws IOException {
+        PageRequest pageRequest = PageRequest.of(pageOffset, pageSize, Sort.by(Sort.Direction.DESC, "createdDate"));
+        Page<Bundle> bundlePage = bundleRepository.findAll(pageRequest);
+        List<Bundle> bundles = bundlePage.getContent();
+        List<ServiceReturnBundleDto> serviceReturnBundleDtoList = amazonService.getAllPicturesInAllBundles(bundles);
+        return serviceReturnBundleDtoList;
     }
 
     /**
      * 넘겨받은 pictures를 묶어서 하나의 bundle로 DB에 저장
      * pictures를 S3에 저장
-     * @param pictureServiceDtos
+     * @param serviceParamPictureDtos
      * @param bundleType
      * @return bundle_id
      */
     @Transactional
-    public Long saveBundleBindingPictures(List<PictureServiceDto> pictureServiceDtos, BundleType bundleType) throws IOException {
+    public Long saveBundleBindingPictures(List<ServiceParamPictureDto> serviceParamPictureDtos, BundleType bundleType) throws IOException {
         Bundle bundle = new Bundle(bundleType);
-        List<pairPictureAndPictureServiceDto> pairs = new ArrayList<>();
+        List<PairPictureAndPictureServiceDto> pairs = new ArrayList<>();
 
         //DB에 저장
-        for (PictureServiceDto pictureServiceDto : pictureServiceDtos) {
-            String storedName = getStoredName(pictureServiceDto.getOriginalName());
-            Picture picture = new Picture(pictureServiceDto.getOriginalName(), storedName, pictureServiceDto.getPictureType());
-            pairs.add(new pairPictureAndPictureServiceDto(picture, pictureServiceDto));
+        for (ServiceParamPictureDto serviceParamPictureDto : serviceParamPictureDtos) {
+            String storedName = getStoredName(serviceParamPictureDto.getOriginalName());
+            Picture picture = new Picture(serviceParamPictureDto.getOriginalName(), storedName, serviceParamPictureDto.getPictureType());
+            pairs.add(new PairPictureAndPictureServiceDto(picture, serviceParamPictureDto));
             bundle.addPicture(picture);
         }
         Bundle saveBundle = bundleRepository.save(bundle);
 
         //s3에 저장
-        for (pairPictureAndPictureServiceDto pair : pairs) {
-            MultipartFile pictureFile = pair.getPictureServiceDto().getPictureFile();
-            String storedName = pair.getPicture().getStoredName();
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentType(pictureFile.getContentType());
-            metadata.setContentLength(pictureFile.getSize());
-            amazonS3Client.putObject(bucket, storedName, pictureFile.getInputStream(), metadata);
-        }
+        amazonService.savePicturesToS3(pairs);
 
         return saveBundle.getId();
     }
@@ -78,12 +86,6 @@ public class BundleService {
         String ext = originalName.substring(pos + 1);
         String storedName = uuid + "." + ext;
         return storedName;
-    }
-
-    @Data
-    static class pairPictureAndPictureServiceDto{
-        private final Picture picture;
-        private final PictureServiceDto pictureServiceDto;
     }
 
 }

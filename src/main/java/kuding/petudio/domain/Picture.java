@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Entity(name = "picture")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Picture {
+public class Picture extends BaseTimeEntity {
 
     public Picture(String originalName, String storedName, PictureType pictureType) {
         this.originalName = originalName;

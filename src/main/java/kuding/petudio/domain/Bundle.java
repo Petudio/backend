@@ -11,7 +11,7 @@ import java.util.List;
 @Entity(name = "bundle")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Bundle {
+public class Bundle extends BaseTimeEntity {
 
     public Bundle(BundleType bundleType) {
         likeCount = 0;
