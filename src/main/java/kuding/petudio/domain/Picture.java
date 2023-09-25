@@ -11,9 +11,9 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Picture {
 
-    public Picture(String originalName, String path, PictureType pictureType) {
+    public Picture(String originalName, String storedName, PictureType pictureType) {
         this.originalName = originalName;
-        this.path = path;
+        this.storedName = storedName;
         this.pictureType = pictureType;
     }
 
@@ -27,7 +27,7 @@ public class Picture {
     private Bundle bundle;
 
     private String originalName;
-    private String path;// s3에서의 파일 이름, uuid이용해 생성?
+    private String storedName;// s3에서의 파일 이름, uuid이용해 생성?
 
     @Enumerated(EnumType.STRING)
     private PictureType pictureType;
