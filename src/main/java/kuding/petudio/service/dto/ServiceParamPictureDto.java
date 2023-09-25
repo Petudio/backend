@@ -1,21 +1,16 @@
-package kuding.petudio.service;
+package kuding.petudio.service.dto;
 
 import kuding.petudio.domain.PictureType;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.web.multipart.MultipartFile;
 
-
-/**
- * controller와 service간 picture를 주고받기 위한 객체
- */
 @Getter
-public class PictureServiceDto {
+public class ServiceParamPictureDto {
     private String originalName;
     private MultipartFile pictureFile;
     private PictureType pictureType;
 
-    public PictureServiceDto(String originalName, MultipartFile pictureFile, PictureType pictureType) {
+    public ServiceParamPictureDto(String originalName, MultipartFile pictureFile, PictureType pictureType) {
         this.originalName = originalName;
         this.pictureFile = pictureFile;
         this.pictureType = pictureType;
