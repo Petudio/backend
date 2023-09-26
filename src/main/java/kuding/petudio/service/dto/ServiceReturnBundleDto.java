@@ -11,11 +11,12 @@ import java.util.List;
  */
 @Getter
 public class ServiceReturnBundleDto {
-
+    private Long id;
     private List<ServiceReturnPictureDto> pictures = new ArrayList<>();
     private BundleType bundleType;
 
-    public ServiceReturnBundleDto( BundleType bundleType) {
+    public ServiceReturnBundleDto(Long id, BundleType bundleType) {
+        this.id = id;
         this.bundleType = bundleType;
     }
 }

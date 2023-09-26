@@ -46,13 +46,13 @@ public class AmazonService {
     public List<ServiceReturnBundleDto> getAllPicturesInAllBundles(List<Bundle> bundles) throws IOException {
         List<ServiceReturnBundleDto> serviceReturnBundleDtos = new ArrayList<>();
         for (Bundle bundle : bundles) {
-            ServiceReturnBundleDto serviceReturnBundleDto = new ServiceReturnBundleDto(bundle.getBundleType());
+            ServiceReturnBundleDto serviceReturnBundleDto = new ServiceReturnBundleDto(bundle.getId(),bundle.getBundleType());
             List<Picture> pictures = bundle.getPictures();
             for (Picture picture : pictures) {
                 S3Object s3Object = amazonS3Client.getObject(bucket, picture.getStoredName());
                 S3ObjectInputStream inputStream = s3Object.getObjectContent();
                 byte[] bytes = inputStream.readAllBytes();
-                ServiceReturnPictureDto serviceReturnPictureDto = new ServiceReturnPictureDto(picture.getOriginalName(), bytes, picture.getPictureType());
+                ServiceReturnPictureDto serviceReturnPictureDto = new ServiceReturnPictureDto(picture.getId(), picture.getOriginalName(), bytes, picture.getPictureType());
                 serviceReturnBundleDto.getPictures().add(serviceReturnPictureDto);
             }
             serviceReturnBundleDtos.add(serviceReturnBundleDto);
