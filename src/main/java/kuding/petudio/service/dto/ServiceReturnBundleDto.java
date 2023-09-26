@@ -19,4 +19,8 @@ public class ServiceReturnBundleDto {
         this.id = id;
         this.bundleType = bundleType;
     }
+
+    public void addPictureDto(ServiceReturnPictureDto serviceReturnPictureDto) {
+        pictures.add(serviceReturnPictureDto);
+    }
 }

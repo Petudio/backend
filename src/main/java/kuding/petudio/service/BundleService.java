@@ -6,8 +6,9 @@ import kuding.petudio.domain.Picture;
 import kuding.petudio.repository.BundleRepository;
 import kuding.petudio.service.dto.ServiceReturnBundleDto;
 import kuding.petudio.service.dto.ServiceParamPictureDto;
-import kuding.petudio.service.lowservice.PairPictureAndPictureServiceDto;
+import kuding.petudio.service.dto.ServiceReturnPictureDto;
 import kuding.petudio.service.lowservice.AmazonService;
+import kuding.petudio.service.etc.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,13 +17,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Slf4j
 @Service
+@Transactional
 public class BundleService {
 
     private final BundleRepository bundleRepository;
@@ -34,45 +36,77 @@ public class BundleService {
         this.amazonService = amazonService;
     }
 
+    @Transactional(readOnly = true)
+    public ServiceReturnBundleDto findBundleById(Long bundleId) {
+        Bundle bundle = bundleRepository.findById(bundleId).orElseThrow(NoSuchElementException::new);
+        List<Picture> pictures = bundle.getPictures();
+        for (Picture picture : pictures) {
+
+        }
+        return null;//TODO
+    }
+
     /**
-     *
+     * 해당 번들의 좋아요를 하나 증가시킨다.
+     * @param bundleId
+     */
+    public void addLikeCont(Long bundleId) {
+        Bundle bundle = bundleRepository.findById(bundleId).orElseThrow(NoSuchElementException::new);
+        bundle.addLikeCount();
+    }
+
+    /**
+     * 최신 번들들을 반환한다.
      * @param pageOffset
      * @param pageSize
      * @return
-     * @throws IOException
      */
     @Transactional(readOnly = true)
-    public List<ServiceReturnBundleDto> findBundlesOrderByCreatedDate(int pageOffset, int pageSize) throws IOException {
+    public List<ServiceReturnBundleDto> findRecentBundles(int pageOffset, int pageSize){
         PageRequest pageRequest = PageRequest.of(pageOffset, pageSize, Sort.by(Sort.Direction.DESC, "createdDate"));
         Page<Bundle> bundlePage = bundleRepository.findAll(pageRequest);
         List<Bundle> bundles = bundlePage.getContent();
-        List<ServiceReturnBundleDto> serviceReturnBundleDtoList = amazonService.getAllPicturesInAllBundles(bundles);
+//        List<ServiceReturnBundleDto> serviceReturnBundleDtoList = amazonService.getAllPicturesFileInBundles(bundles);
+        List<ServiceReturnBundleDto> serviceReturnBundleDtoList = new ArrayList<>();
+        for (Bundle bundle : bundles) {
+            ServiceReturnBundleDto serviceReturnBundleDto = new ServiceReturnBundleDto(bundle.getId(), bundle.getBundleType());
+            List<Picture> pictures = bundle.getPictures();
+            for (Picture picture : pictures) {
+                byte[] pictureByteArray = amazonService.getPictureFromS3(picture.getStoredName());
+                ServiceReturnPictureDto serviceReturnPictureDto = new ServiceReturnPictureDto(picture.getId(), picture.getOriginalName(), pictureByteArray, picture.getPictureType());
+                serviceReturnBundleDto.addPictureDto(serviceReturnPictureDto);
+            }
+            serviceReturnBundleDtoList.add(serviceReturnBundleDto);
+        }
         return serviceReturnBundleDtoList;
     }
 
     /**
      * 넘겨받은 pictures를 묶어서 하나의 bundle로 DB에 저장
      * pictures를 S3에 저장
-     * @param serviceParamPictureDtos
-     * @param bundleType
+     * @param serviceParamPictureDtos 하나의 번들에 묶일 picture들
+     * @param bundleType 어떠한 ai모델을 사용햇는가
      * @return bundle_id
      */
-    @Transactional
-    public Long saveBundleBindingPictures(List<ServiceParamPictureDto> serviceParamPictureDtos, BundleType bundleType) throws IOException {
+    public Long saveBundleBindingPictures(List<ServiceParamPictureDto> serviceParamPictureDtos, BundleType bundleType) {
         Bundle bundle = new Bundle(bundleType);
-        List<PairPictureAndPictureServiceDto> pairs = new ArrayList<>();
+        List<Pair<Picture, ServiceParamPictureDto>> pairs = new ArrayList<>();
 
         //DB에 저장
         for (ServiceParamPictureDto serviceParamPictureDto : serviceParamPictureDtos) {
             String storedName = getStoredName(serviceParamPictureDto.getOriginalName());
             Picture picture = new Picture(serviceParamPictureDto.getOriginalName(), storedName, serviceParamPictureDto.getPictureType());
-            pairs.add(new PairPictureAndPictureServiceDto(picture, serviceParamPictureDto));
+            pairs.add(new Pair(picture, serviceParamPictureDto));
             bundle.addPicture(picture);
         }
         Bundle saveBundle = bundleRepository.save(bundle);
 
         //s3에 저장
-        amazonService.savePicturesToS3(pairs);
+        for (Pair<Picture, ServiceParamPictureDto> pair : pairs) {
+            Picture picture = pair.getFirst();
+            ServiceParamPictureDto pictureDto = pair.getSecond();
+            amazonService.savePictureToS3(pictureDto.getPictureFile(), picture.getStoredName());
+        }
 
         return saveBundle.getId();
     }
