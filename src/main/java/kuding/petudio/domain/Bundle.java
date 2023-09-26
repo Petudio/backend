@@ -35,4 +35,8 @@ public class Bundle extends BaseTimeEntity {
         pictures.add(picture);
         picture.setBundle(this);
     }
+
+    public void addLikeCount() {
+        likeCount++;
+    }
 }

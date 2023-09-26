@@ -19,8 +19,4 @@ public class PictureService {
         return null;//return afterImage
     }
 
-    public ServiceParamPictureDto service2(ServiceParamPictureDto picture) {
-        return null;
-    }
-
 }

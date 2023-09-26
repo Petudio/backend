@@ -6,57 +6,49 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import kuding.petudio.domain.Bundle;
 import kuding.petudio.domain.Picture;
+import kuding.petudio.service.dto.ServiceParamPictureDto;
 import kuding.petudio.service.dto.ServiceReturnBundleDto;
 import kuding.petudio.service.dto.ServiceReturnPictureDto;
+import kuding.petudio.service.etc.Pair;
+import kuding.petudio.service.etc.callback.IoExceptionResolveTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
 @Service
-public class AmazonService {
+public class AmazonService{
 
     private final AmazonS3Client amazonS3Client;
-
+    private final IoExceptionResolveTemplate ioExceptionResolveTemplate;
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
     @Autowired
     public AmazonService(AmazonS3Client amazonS3Client) {
         this.amazonS3Client = amazonS3Client;
+        ioExceptionResolveTemplate = new IoExceptionResolveTemplate();
     }
 
-    public void savePicturesToS3(List<PairPictureAndPictureServiceDto> pairs) throws IOException {
-        for (PairPictureAndPictureServiceDto pair : pairs) {
-            MultipartFile pictureFile = pair.getServiceParamPictureDto().getPictureFile();
-            String storedName = pair.getPicture().getStoredName();
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentType(pictureFile.getContentType());
-            metadata.setContentLength(pictureFile.getSize());
-            amazonS3Client.putObject(bucket, storedName, pictureFile.getInputStream(), metadata);
-        }
+    public byte[] getPictureFromS3(String storedPictureName) {
+        S3Object s3Object = amazonS3Client.getObject(bucket, storedPictureName);
+        S3ObjectInputStream inputStream = s3Object.getObjectContent();
+        byte[] pictureByteArray = ioExceptionResolveTemplate.execute(inputStream::readAllBytes);
+        return pictureByteArray;
     }
 
-    public List<ServiceReturnBundleDto> getAllPicturesInAllBundles(List<Bundle> bundles) throws IOException {
-        List<ServiceReturnBundleDto> serviceReturnBundleDtos = new ArrayList<>();
-        for (Bundle bundle : bundles) {
-            ServiceReturnBundleDto serviceReturnBundleDto = new ServiceReturnBundleDto(bundle.getId(),bundle.getBundleType());
-            List<Picture> pictures = bundle.getPictures();
-            for (Picture picture : pictures) {
-                S3Object s3Object = amazonS3Client.getObject(bucket, picture.getStoredName());
-                S3ObjectInputStream inputStream = s3Object.getObjectContent();
-                byte[] bytes = inputStream.readAllBytes();
-                ServiceReturnPictureDto serviceReturnPictureDto = new ServiceReturnPictureDto(picture.getId(), picture.getOriginalName(), bytes, picture.getPictureType());
-                serviceReturnBundleDto.getPictures().add(serviceReturnPictureDto);
-            }
-            serviceReturnBundleDtos.add(serviceReturnBundleDto);
-        }
-        return serviceReturnBundleDtos;
+    public void savePictureToS3(MultipartFile pictureFile, String storedPictureName) {
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentType(pictureFile.getContentType());
+        metadata.setContentLength(pictureFile.getSize());
+        ioExceptionResolveTemplate.execute(() -> {
+            amazonS3Client.putObject(bucket, storedPictureName, pictureFile.getInputStream(), metadata);
+            return null;
+        });
     }
 }
