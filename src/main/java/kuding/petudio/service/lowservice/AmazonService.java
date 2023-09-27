@@ -38,8 +38,7 @@ public class AmazonService{
     public byte[] getPictureFromS3(String storedPictureName) {
         S3Object s3Object = amazonS3Client.getObject(bucket, storedPictureName);
         S3ObjectInputStream inputStream = s3Object.getObjectContent();
-        byte[] pictureByteArray = ioExceptionResolveTemplate.execute(inputStream::readAllBytes);
-        return pictureByteArray;
+        return ioExceptionResolveTemplate.execute(inputStream::readAllBytes);
     }
 
     public void savePictureToS3(MultipartFile pictureFile, String storedPictureName) {
