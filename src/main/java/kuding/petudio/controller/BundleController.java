@@ -71,7 +71,7 @@ public class BundleController {
     }
 
     @PostMapping("/{bundleId}/like")
-    public void addLikeCount(@PathVariable String bundleId) {
-        bundleService.addLikeCont(Long.valueOf(bundleId));
+    public void addLikeCount(@PathVariable Long bundleId) {
+        bundleService.addLikeCont(bundleId);
     }
 }
