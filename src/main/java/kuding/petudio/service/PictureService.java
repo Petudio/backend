@@ -4,7 +4,6 @@ import kuding.petudio.domain.Picture;
 import kuding.petudio.repository.PictureRepository;
 import kuding.petudio.service.dto.ServiceParamPictureDto;
 import kuding.petudio.service.dto.ServiceReturnPictureDto;
-import kuding.petudio.service.lowservice.AmazonService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

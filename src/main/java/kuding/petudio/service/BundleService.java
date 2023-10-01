@@ -7,7 +7,6 @@ import kuding.petudio.repository.BundleRepository;
 import kuding.petudio.service.dto.ServiceReturnBundleDto;
 import kuding.petudio.service.dto.ServiceParamPictureDto;
 import kuding.petudio.service.dto.ServiceReturnPictureDto;
-import kuding.petudio.service.lowservice.AmazonService;
 import kuding.petudio.service.etc.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
