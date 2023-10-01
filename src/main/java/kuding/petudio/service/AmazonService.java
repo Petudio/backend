@@ -1,15 +1,9 @@
-package kuding.petudio.service.lowservice;
+package kuding.petudio.service;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
-import kuding.petudio.domain.Bundle;
-import kuding.petudio.domain.Picture;
-import kuding.petudio.service.dto.ServiceParamPictureDto;
-import kuding.petudio.service.dto.ServiceReturnBundleDto;
-import kuding.petudio.service.dto.ServiceReturnPictureDto;
-import kuding.petudio.service.etc.Pair;
 import kuding.petudio.service.etc.callback.IoExceptionResolveTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
