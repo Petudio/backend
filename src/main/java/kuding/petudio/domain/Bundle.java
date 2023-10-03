@@ -13,7 +13,8 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Bundle extends BaseTimeEntity {
 
-    public Bundle(BundleType bundleType) {
+    public Bundle(String title, BundleType bundleType) {
+        this.title = title;
         likeCount = 0;
         this.bundleType = bundleType;
     }
@@ -22,6 +23,8 @@ public class Bundle extends BaseTimeEntity {
     @GeneratedValue
     @Column(name = "bundle_id")
     private Long id;
+
+    private String title;
 
     @OneToMany(mappedBy = "bundle", cascade = CascadeType.ALL)
     private List<Picture> pictures = new ArrayList<>();

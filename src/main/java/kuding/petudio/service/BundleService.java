@@ -96,8 +96,8 @@ public class BundleService {
      * @param bundleType 어떠한 ai모델을 사용햇는가
      * @return bundle_id
      */
-    public Long saveBundleBindingPictures(List<ServiceParamPictureDto> serviceParamPictureDtos, BundleType bundleType) {
-        Bundle bundle = new Bundle(bundleType);
+    public Long saveBundleBindingPictures(List<ServiceParamPictureDto> serviceParamPictureDtos, String title ,BundleType bundleType) {
+        Bundle bundle = new Bundle(title, bundleType);
         List<Pair<Picture, ServiceParamPictureDto>> pairs = new ArrayList<>();
 
         //DB에 저장
