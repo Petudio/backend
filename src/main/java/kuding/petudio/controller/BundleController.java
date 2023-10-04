@@ -4,7 +4,9 @@ import kuding.petudio.controller.dto.BundleUploadDTO;
 import kuding.petudio.domain.BundleType;
 import kuding.petudio.domain.Picture;
 import kuding.petudio.domain.PictureType;
+import kuding.petudio.service.AmazonService;
 import kuding.petudio.service.BundleService;
+import kuding.petudio.service.PictureService;
 import kuding.petudio.service.dto.ServiceParamPictureDto;
 import kuding.petudio.service.dto.ServiceReturnBundleDto;
 import kuding.petudio.service.dto.ServiceReturnPictureDto;
@@ -27,6 +29,8 @@ import static kuding.petudio.domain.BundleType.ANIMAL_TO_HUMAN;
 public class BundleController {
 
     private final BundleService bundleService;
+    private final PictureService pictureService;
+    private final AmazonService amazonService;
 
     @GetMapping
     @ResponseBody
@@ -45,15 +49,35 @@ public class BundleController {
 
     /**
      * AI 생성 전 Before 이미지 업로드
-     * 업로드된 이미지로 Bundle을 만들어 DB에 저장
+     * @return 업로드한 이미지와 AI로 생성된 이미지를 담은 리스트
      */
     @PostMapping("/upload")
-    public void uploadBeforePicture(MultipartFile beforePicture){
+    public List<ServiceParamPictureDto> uploadBeforePicture(MultipartFile beforePicture){
         ServiceParamPictureDto beforePictureDto = new ServiceParamPictureDto(beforePicture.getOriginalFilename(),beforePicture,PictureType.BEFORE);
-        List<ServiceParamPictureDto> serviceParamPictureDtos = new ArrayList<>();
-        serviceParamPictureDtos.add(beforePictureDto);
-        bundleService.saveBundleBindingPictures(serviceParamPictureDtos, null, ANIMAL_TO_HUMAN);
+        ServiceParamPictureDto afterPictureDto = pictureService.animalToHuman(beforePictureDto);
+        List<ServiceParamPictureDto> pictureDtos = new ArrayList<>();
+        pictureDtos.add(beforePictureDto);
+        pictureDtos.add(afterPictureDto);
+        return pictureDtos;
     }
+
+//    /**
+//     * 생성 버튼 눌렀을 때
+//     * 1.before 이미지가 저장되어 있는 Bundle을 조회
+//     * 2.Picture 서비스의 AI 메서드를 통해 afterImage 생성
+//     * 3.조회한 번들에 afterImage 정보를 담아 다시 DB에 저장
+//     */
+//    @PostMapping("/upload/{bundleId}")
+//    public void makeAfterImage(@PathVariable Long bundleId) {
+//        ServiceReturnBundleDto findBundle = bundleService.findBundleById(bundleId); //번들에서 before 이미지가 저장되어 있는 번들 조회
+//        List<ServiceReturnPictureDto> bundlePictures = findBundle.getPictures(); //조회한 번들에서 이미지 정보 가져옴
+//        ServiceReturnPictureDto returnBeforePicture = bundlePictures.get(0); //before 이미지 정보
+//        MultipartFile multipartFile = amazonService.convertByteArrayToMultiFile(returnBeforePicture.getPictureByteArray());
+//        ServiceParamPictureDto beforePicture = new ServiceParamPictureDto(returnBeforePicture.getOriginalName(), multipartFile, returnBeforePicture.getPictureType());
+//        ServiceParamPictureDto afterPicture = pictureService.animalToHuman(beforePicture);
+//
+//    }
+
 
     /**
      * Bundle의 업로드 데이터를 받아 DB에 저장한다.
