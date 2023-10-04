@@ -12,6 +12,6 @@ import java.util.List;
 @Getter
 public class BundleUploadDTO {
 
-    private List<MultipartFile> multipartFiles;
+    private List<ServiceParamPictureDto> pictureDtos;
     private String bundleTitle;
 }
