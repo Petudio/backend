@@ -49,10 +49,11 @@ public class BundleController {
 
     /**
      * AI 생성 전 Before 이미지 업로드
-     * @return 업로드한 이미지와 AI로 생성된 이미지를 담은 리스트
+     * @return 업로드한 이미지와 AI로 생성된 이미지 DTO들을 JSON으로 변환하여 리턴
      */
+    @ResponseBody
     @PostMapping("/upload")
-    public List<ServiceParamPictureDto> uploadBeforePicture(MultipartFile beforePicture){
+    public List<ServiceParamPictureDto> uploadBeforePicture(@RequestParam("beforePicture") MultipartFile beforePicture){
         ServiceParamPictureDto beforePictureDto = new ServiceParamPictureDto(beforePicture.getOriginalFilename(),beforePicture,PictureType.BEFORE);
         ServiceParamPictureDto afterPictureDto = pictureService.animalToHuman(beforePictureDto);
         List<ServiceParamPictureDto> pictureDtos = new ArrayList<>();
@@ -62,7 +63,7 @@ public class BundleController {
     }
 
 //    /**
-//     * 생성 버튼 눌렀을 때
+//     * 생성 버튼 눌렀을 때 -> 프론트에서 처리
 //     * 1.before 이미지가 저장되어 있는 Bundle을 조회
 //     * 2.Picture 서비스의 AI 메서드를 통해 afterImage 생성
 //     * 3.조회한 번들에 afterImage 정보를 담아 다시 DB에 저장
@@ -80,25 +81,17 @@ public class BundleController {
 
 
     /**
-     * Bundle의 업로드 데이터를 받아 DB에 저장한다.
+     * 프론트에서 두 사진에 대한 DTO를 받아 DB에 저장한다.
      * @param bundleUploadDTO -> JSON 형식 HTTPBody
      * 주고 받는 데이터 형식 정리 필요
      */
     @PostMapping("/new")
     public void uploadBundle(@RequestBody BundleUploadDTO bundleUploadDTO) {
 
-        List<MultipartFile> multipartFiles = bundleUploadDTO.getMultipartFiles();
-        String bundleTitle = bundleUploadDTO.getBundleTitle(); //TODO Bundle 도메인에 타이틀 추가 필요
+        List<ServiceParamPictureDto> pictureDtos = bundleUploadDTO.getPictureDtos();
+        String bundleTitle = bundleUploadDTO.getBundleTitle();
 
-        //각 사진에 대한  DTO -> Before인지 After인지 알 수 있는 방법..? //TODO 리팩토링 필요
-        ServiceParamPictureDto serviceParamPictureDtoBefore = makeServiceParamPictureDto(multipartFiles.get(0), PictureType.BEFORE);
-        ServiceParamPictureDto serviceParamPictureDtoAfter = makeServiceParamPictureDto(multipartFiles.get(1), PictureType.AFTER);
-
-        List<ServiceParamPictureDto> serviceParamPictureDtos = new ArrayList<>();
-        serviceParamPictureDtos.add(serviceParamPictureDtoBefore);
-        serviceParamPictureDtos.add(serviceParamPictureDtoAfter);
-
-        bundleService.saveBundleBindingPictures(serviceParamPictureDtos, bundleTitle,ANIMAL_TO_HUMAN); // 게시글 업로드
+        bundleService.saveBundleBindingPictures(pictureDtos, bundleTitle, ANIMAL_TO_HUMAN); // 게시글 업로드
     }
 
     private ServiceParamPictureDto makeServiceParamPictureDto(MultipartFile multipartFile, PictureType pictureType) {
