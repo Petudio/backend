@@ -7,7 +7,6 @@ import kuding.petudio.repository.BundleRepository;
 import kuding.petudio.service.dto.ServiceReturnBundleDto;
 import kuding.petudio.service.dto.ServiceParamPictureDto;
 import kuding.petudio.service.dto.ServiceReturnPictureDto;
-import kuding.petudio.service.lowservice.AmazonService;
 import kuding.petudio.service.etc.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,8 +96,8 @@ public class BundleService {
      * @param bundleType 어떠한 ai모델을 사용햇는가
      * @return bundle_id
      */
-    public Long saveBundleBindingPictures(List<ServiceParamPictureDto> serviceParamPictureDtos, BundleType bundleType) {
-        Bundle bundle = new Bundle(bundleType);
+    public Long saveBundleBindingPictures(List<ServiceParamPictureDto> serviceParamPictureDtos, String title ,BundleType bundleType) {
+        Bundle bundle = new Bundle(title, bundleType);
         List<Pair<Picture, ServiceParamPictureDto>> pairs = new ArrayList<>();
 
         //DB에 저장

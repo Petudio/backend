@@ -32,7 +32,7 @@ public class TestController {
         ServiceParamPictureDto serviceParamPictureDto = new ServiceParamPictureDto(picture.getOriginalFilename(), picture, PictureType.BEFORE);
         List<ServiceParamPictureDto> pictures = new ArrayList<>();
         pictures.add(serviceParamPictureDto);
-        bundleService.saveBundleBindingPictures(pictures, BundleType.ANIMAL_TO_HUMAN);
+        bundleService.saveBundleBindingPictures(pictures, "example",BundleType.ANIMAL_TO_HUMAN);
         return "ok";
     }
 
@@ -55,7 +55,7 @@ public class TestController {
         List<ServiceParamPictureDto> pictures = new ArrayList<>();
         pictures.add(serviceParamPictureDto1);
         pictures.add(serviceParamPictureDto2);
-        bundleService.saveBundleBindingPictures(pictures, BundleType.ANIMAL_TO_HUMAN);
+        bundleService.saveBundleBindingPictures(pictures, "example",BundleType.ANIMAL_TO_HUMAN);
         return "ok";
     }
 

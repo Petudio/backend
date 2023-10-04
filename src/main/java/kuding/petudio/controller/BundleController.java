@@ -62,7 +62,7 @@ public class BundleController {
         serviceParamPictureDtos.add(serviceParamPictureDtoBefore);
         serviceParamPictureDtos.add(serviceParamPictureDtoAfter);
 
-        bundleService.saveBundleBindingPictures(serviceParamPictureDtos, ANIMAL_TO_HUMAN); // 게시글 업로드
+        bundleService.saveBundleBindingPictures(serviceParamPictureDtos, bundleTitle,ANIMAL_TO_HUMAN); // 게시글 업로드
     }
 
     private ServiceParamPictureDto makeServiceParamPictureDto(MultipartFile multipartFile, PictureType pictureType) {
