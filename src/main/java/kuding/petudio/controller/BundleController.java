@@ -44,6 +44,18 @@ public class BundleController {
     }
 
     /**
+     * AI 생성 전 Before 이미지 업로드
+     * 업로드된 이미지로 Bundle을 만들어 DB에 저장
+     */
+    @PostMapping("/upload")
+    public void uploadBeforePicture(MultipartFile beforePicture){
+        ServiceParamPictureDto beforePictureDto = new ServiceParamPictureDto(beforePicture.getOriginalFilename(),beforePicture,PictureType.BEFORE);
+        List<ServiceParamPictureDto> serviceParamPictureDtos = new ArrayList<>();
+        serviceParamPictureDtos.add(beforePictureDto);
+        bundleService.saveBundleBindingPictures(serviceParamPictureDtos, null, ANIMAL_TO_HUMAN);
+    }
+
+    /**
      * Bundle의 업로드 데이터를 받아 DB에 저장한다.
      * @param bundleUploadDTO -> JSON 형식 HTTPBody
      * 주고 받는 데이터 형식 정리 필요
