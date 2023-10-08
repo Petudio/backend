@@ -8,6 +8,7 @@ import kuding.petudio.service.dto.ServiceReturnBundleDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -59,7 +60,7 @@ public class TestController {
         return "ok";
     }
 
-    @GetMapping("/test/get-recent-pictures")
+    @GetMapping(value = "/test/get-recent-pictures")
     public ResponseEntity<ByteArrayResource> getRecentPicture() {
         List<ServiceReturnBundleDto> recentBundles = bundleService.findRecentBundles(0, 5);
         ServiceReturnBundleDto serviceReturnBundleDto = recentBundles.get(0);
@@ -73,4 +74,5 @@ public class TestController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
                 .body(resource);
     }
+
 }
