@@ -7,6 +7,7 @@ import kuding.petudio.domain.PictureType;
 import kuding.petudio.repository.BundleRepository;
 import kuding.petudio.repository.PictureRepository;
 import kuding.petudio.service.BundleService;
+import kuding.petudio.service.PictureService;
 import kuding.petudio.service.dto.ServiceParamPictureDto;
 import kuding.petudio.service.dto.ServiceReturnBundleDto;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +36,8 @@ public class TestController {
     private BundleRepository bundleRepository;
     @Autowired
     private PictureRepository pictureRepository;
+    @Autowired
+    private PictureService pictureService;
 
     @PostMapping("/test/picture")
     public String uploadTestFile(@RequestParam("picture") MultipartFile picture) {
@@ -69,6 +72,13 @@ public class TestController {
         log.info("all = {}", all);
         List<Picture> all2 = pictureRepository.findAll();
         log.info("all2 = {}", all2);
+        return "ok";
+    }
+
+    @GetMapping("/test/blockAiService1")
+    public String getBlockService() {
+        pictureService.animalToHuman(null);
+        log.info("before return");
         return "ok";
     }
 }
