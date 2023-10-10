@@ -79,7 +79,7 @@ public class BundleController {
         List<ServiceReturnPictureDto> pictures = findBundle.getPictures();
         List<PictureReturnDto> pictureReturnDtos = new List<PictureReturnDto>;
         for (ServiceReturnPictureDto picture : pictures) {
-            pictureReturnDtos.add(new PictureReturnDto(picture.getId(), picture.getOriginalName(), picture.getPictureByteArray(), picture.getPictureType()));
+            pictureReturnDtos.add(new PictureReturnDto(picture.getId(), picture.getOriginalName(), picture.getPictureS3Url(), picture.getPictureType()));
         }
         return new BundleReturnDto(findBundle.getId(), pictureReturnDtos, findBundle.getBundleType());
     }
