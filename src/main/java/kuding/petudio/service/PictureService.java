@@ -38,8 +38,8 @@ public class PictureService {
     @Transactional
     public ServiceReturnPictureDto findPictureById(Long pictureId) {
         Picture picture = pictureRepository.findById(pictureId).orElseThrow(NoSuchElementException::new);
-        byte[] byteArray = amazonService.getPictureFromS3(picture.getStoredName());
-        return new ServiceReturnPictureDto(picture.getId(), picture.getOriginalName(), byteArray, picture.getPictureType());
+        String pictureS3Url = amazonService.getPictureS3Url(picture.getStoredName());
+        return new ServiceReturnPictureDto(picture.getId(), picture.getOriginalName(), pictureS3Url, picture.getPictureType());
     }
 
 }
