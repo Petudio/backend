@@ -1,23 +1,28 @@
 package kuding.petudio.service.etc.testcontroller;
 
+import kuding.petudio.domain.Bundle;
 import kuding.petudio.domain.BundleType;
+import kuding.petudio.domain.Picture;
 import kuding.petudio.domain.PictureType;
+import kuding.petudio.repository.BundleRepository;
+import kuding.petudio.repository.PictureRepository;
 import kuding.petudio.service.BundleService;
+import kuding.petudio.service.PictureService;
 import kuding.petudio.service.dto.ServiceParamPictureDto;
 import kuding.petudio.service.dto.ServiceReturnBundleDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.UrlResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,26 +32,20 @@ public class TestController {
 
     @Autowired
     private BundleService bundleService;
+    @Autowired
+    private BundleRepository bundleRepository;
+    @Autowired
+    private PictureRepository pictureRepository;
+    @Autowired
+    private PictureService pictureService;
 
     @PostMapping("/test/picture")
     public String uploadTestFile(@RequestParam("picture") MultipartFile picture) {
         ServiceParamPictureDto serviceParamPictureDto = new ServiceParamPictureDto(picture.getOriginalFilename(), picture, PictureType.BEFORE);
         List<ServiceParamPictureDto> pictures = new ArrayList<>();
         pictures.add(serviceParamPictureDto);
-        bundleService.saveBundleBindingPictures(pictures, "example",BundleType.ANIMAL_TO_HUMAN);
+        bundleService.saveBundleBindingPictures(pictures, "example", BundleType.ANIMAL_TO_HUMAN);
         return "ok";
-    }
-
-    @GetMapping("/test/pictures")
-    public ResponseEntity getAllPictures() {
-        List<ServiceReturnBundleDto> bundles = bundleService.findRecentBundles(0, 5);
-        String originalName = bundles.get(0).getPictures().get(0).getOriginalName();
-        byte[] bytes = bundles.get(0).getPictures().get(0).getPictureByteArray();
-        ByteArrayResource resource = new ByteArrayResource(bytes);
-        String contentDisposition = "attachment; filename = \"" + originalName + "\"";
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
-                .body(resource);
     }
 
     @PostMapping("/test/upload-picture-pair")
@@ -56,23 +55,30 @@ public class TestController {
         List<ServiceParamPictureDto> pictures = new ArrayList<>();
         pictures.add(serviceParamPictureDto1);
         pictures.add(serviceParamPictureDto2);
-        bundleService.saveBundleBindingPictures(pictures, "example",BundleType.ANIMAL_TO_HUMAN);
+        bundleService.saveBundleBindingPictures(pictures, "example", BundleType.ANIMAL_TO_HUMAN);
         return "ok";
     }
 
-    @GetMapping(value = "/test/get-recent-pictures")
-    public ResponseEntity<ByteArrayResource> getRecentPicture() {
+    @GetMapping("/test/getS3Url")
+    public String getS3Url() {
         List<ServiceReturnBundleDto> recentBundles = bundleService.findRecentBundles(0, 5);
-        ServiceReturnBundleDto serviceReturnBundleDto = recentBundles.get(0);
-        byte[] bytes = serviceReturnBundleDto.getPictures().get(0).getPictureByteArray();
-        String originalName = serviceReturnBundleDto.getPictures().get(0).getOriginalName();
-        ByteArrayResource resource = new ByteArrayResource(bytes);
-        log.info("bundlesize={}", recentBundles.size());
-        log.info("picturesize={}", serviceReturnBundleDto.getPictures().size());
-        String contentDisposition = "attachment; filename = \"" + originalName + "\"";
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
-                .body(resource);
+        log.info("recent Bundles = {}", recentBundles);
+        return recentBundles.get(0).getPictures().get(0).getPictureS3Url();
     }
 
+    @GetMapping("/test/getAll")
+    public String getAll() {
+        List<Bundle> all = bundleRepository.findAll();
+        log.info("all = {}", all);
+        List<Picture> all2 = pictureRepository.findAll();
+        log.info("all2 = {}", all2);
+        return "ok";
+    }
+
+    @GetMapping("/test/blockAiService1")
+    public String getBlockService() {
+        pictureService.animalToHuman(null);
+        log.info("before return");
+        return "ok";
+    }
 }

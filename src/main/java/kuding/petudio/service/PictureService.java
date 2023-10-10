@@ -6,6 +6,7 @@ import kuding.petudio.service.dto.ServiceParamPictureDto;
 import kuding.petudio.service.dto.ServiceReturnPictureDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,14 +33,28 @@ public class PictureService {
      */
     public ServiceParamPictureDto animalToHuman(ServiceParamPictureDto picture) {
         //TODO AI알고리즘으로 이미지 생성, 생성된 이미지 return
+        System.out.println("sleep 실행 전");
+
+        try {
+
+            Thread.sleep(1000 * 10); //10초 대기
+
+        } catch (InterruptedException e) {
+
+            e.printStackTrace();
+
+        }
+
+        System.out.println("sleep 실행 후");
         return null;//return afterImage
     }
 
     @Transactional
     public ServiceReturnPictureDto findPictureById(Long pictureId) {
         Picture picture = pictureRepository.findById(pictureId).orElseThrow(NoSuchElementException::new);
-        byte[] byteArray = amazonService.getPictureFromS3(picture.getStoredName());
-        return new ServiceReturnPictureDto(picture.getId(), picture.getOriginalName(), byteArray, picture.getPictureType());
+        String pictureS3Url = amazonService.getPictureS3Url(picture.getStoredName());
+        return new ServiceReturnPictureDto(picture.getId(), picture.getOriginalName(), pictureS3Url, picture.getPictureType());
     }
+
 
 }

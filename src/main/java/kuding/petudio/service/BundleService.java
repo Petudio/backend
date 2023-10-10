@@ -47,8 +47,8 @@ public class BundleService {
         List<Picture> pictures = bundle.getPictures();
         List<ServiceReturnPictureDto> pictureDtoList = new ArrayList<>();
         for (Picture picture : pictures) {
-            byte[] pictureByteArray = amazonService.getPictureFromS3(picture.getStoredName());
-            ServiceReturnPictureDto pictureDto = new ServiceReturnPictureDto(picture.getId(), picture.getOriginalName(), pictureByteArray, picture.getPictureType());
+            String pictureS3Url = amazonService.getPictureS3Url(picture.getStoredName());
+            ServiceReturnPictureDto pictureDto = new ServiceReturnPictureDto(picture.getId(), picture.getOriginalName(), pictureS3Url, picture.getPictureType());
             pictureDtoList.add(pictureDto);
         }
         return new ServiceReturnBundleDto(bundle.getId(), pictureDtoList, bundle.getBundleType());
@@ -74,13 +74,14 @@ public class BundleService {
         PageRequest pageRequest = PageRequest.of(pageOffset, pageSize, Sort.by(Sort.Direction.DESC, "createdDate"));
         Page<Bundle> bundlePage = bundleRepository.findAll(pageRequest);
         List<Bundle> bundles = bundlePage.getContent();
+        log.info("bundles = {}", bundles);
         List<ServiceReturnBundleDto> serviceReturnBundleDtoList = new ArrayList<>();
         for (Bundle bundle : bundles) {
             List<Picture> pictures = bundle.getPictures();
             List<ServiceReturnPictureDto> pictureDtoList = new ArrayList<>();
             for (Picture picture : pictures) {
-                byte[] pictureByteArray = amazonService.getPictureFromS3(picture.getStoredName());
-                ServiceReturnPictureDto serviceReturnPictureDto = new ServiceReturnPictureDto(picture.getId(), picture.getOriginalName(), pictureByteArray, picture.getPictureType());
+                String pictureS3Url = amazonService.getPictureS3Url(picture.getStoredName());
+                ServiceReturnPictureDto serviceReturnPictureDto = new ServiceReturnPictureDto(picture.getId(), picture.getOriginalName(), pictureS3Url, picture.getPictureType());
                 pictureDtoList.add(serviceReturnPictureDto);
             }
             ServiceReturnBundleDto serviceReturnBundleDto = new ServiceReturnBundleDto(bundle.getId(), pictureDtoList, bundle.getBundleType());
@@ -102,7 +103,7 @@ public class BundleService {
 
         //DB에 저장
         for (ServiceParamPictureDto serviceParamPictureDto : serviceParamPictureDtos) {
-            String storedName = getStoredName(serviceParamPictureDto.getOriginalName());
+            String storedName = createStoredName(serviceParamPictureDto.getOriginalName());
             Picture picture = new Picture(serviceParamPictureDto.getOriginalName(), storedName, serviceParamPictureDto.getPictureType());
             pairs.add(new Pair<>(picture, serviceParamPictureDto));
             bundle.addPicture(picture);
@@ -119,7 +120,7 @@ public class BundleService {
         return saveBundle.getId();
     }
 
-    private String getStoredName(String originalName) {
+    private String createStoredName(String originalName) {
         String uuid = UUID.randomUUID().toString();
         int pos = originalName.lastIndexOf(".");
         if (pos == -1) {

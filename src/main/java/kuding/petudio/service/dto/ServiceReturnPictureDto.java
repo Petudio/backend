@@ -7,13 +7,13 @@ import lombok.Getter;
 public class ServiceReturnPictureDto {
     private Long id;
     private String originalName;
-    private byte[] pictureByteArray;
+    private String pictureS3Url;
     private PictureType pictureType;
 
-    public ServiceReturnPictureDto(Long id, String originalName, byte[] pictureByteArray, PictureType pictureType) {
+    public ServiceReturnPictureDto(Long id, String originalName, String pictureS3Url, PictureType pictureType) {
         this.id = id;
         this.originalName = originalName;
-        this.pictureByteArray = pictureByteArray;
+        this.pictureS3Url = pictureS3Url;
         this.pictureType = pictureType;
     }
 }
