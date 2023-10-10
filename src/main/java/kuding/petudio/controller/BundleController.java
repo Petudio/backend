@@ -1,17 +1,21 @@
 package kuding.petudio.controller;
 
-import kuding.petudio.controller.dto.BundleUploadDTO;
+import kuding.petudio.controller.dto.BaseDto;
+import kuding.petudio.controller.dto.BundleReturnDto;
+import kuding.petudio.controller.dto.PictureReturnDto;
 import kuding.petudio.domain.PictureType;
 import kuding.petudio.service.BundleService;
 import kuding.petudio.service.PictureService;
 import kuding.petudio.service.dto.ServiceParamPictureDto;
 import kuding.petudio.service.dto.ServiceReturnBundleDto;
+import kuding.petudio.service.dto.ServiceReturnPictureDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,9 +36,8 @@ public class BundleController {
      */
     @GetMapping
     @ResponseBody
-    public List<ServiceReturnBundleDto> bundleList(
-            @RequestParam int pageOffset,
-            @RequestParam int pageSize) {
+    public List<ServiceReturnBundleDto> bundleList(@RequestParam int pageOffset, @RequestParam int pageSize) {
+
         List<ServiceReturnBundleDto> recentBundles = bundleService.findRecentBundles(pageOffset, pageSize);
         return recentBundles;
     }
@@ -45,13 +48,12 @@ public class BundleController {
      */
     @ResponseBody
     @PostMapping("/upload")
-    public List<ServiceParamPictureDto> uploadBeforePicture(@RequestParam("beforePicture") MultipartFile beforePicture){
-        ServiceParamPictureDto beforePictureDto = new ServiceParamPictureDto(beforePicture.getOriginalFilename(),beforePicture,PictureType.BEFORE);
-        ServiceParamPictureDto afterPictureDto = pictureService.animalToHuman(beforePictureDto);
-        List<ServiceParamPictureDto> pictureDtos = new ArrayList<>();
-        pictureDtos.add(beforePictureDto);
-        pictureDtos.add(afterPictureDto);
-        return pictureDtos;
+    public BaseDto uploadBeforePicture(@RequestParam("beforePicture") MultipartFile beforePicture) throws IOException {
+        ServiceParamPictureDto beforePictureDto = new ServiceParamPictureDto(beforePicture.getOriginalFilename(), beforePicture, PictureType.BEFORE);
+        pictureService.animalToHuman(beforePictureDto);
+        BaseDto baseDto = new BaseDto();
+        baseDto.setData(null);
+        return baseDto;
     }
 
     /**
@@ -60,16 +62,25 @@ public class BundleController {
      * 주고 받는 데이터 형식 정리 필요
      */
     @PostMapping("/new")
-    public void uploadBundle(@RequestBody BundleUploadDTO bundleUploadDTO) {
-
-        List<ServiceParamPictureDto> pictureDtos = bundleUploadDTO.getPictureDtos();
-        String bundleTitle = bundleUploadDTO.getBundleTitle();
-
-        bundleService.saveBundleBindingPictures(pictureDtos, bundleTitle, ANIMAL_TO_HUMAN); // 게시글 업로드
+    public void uploadBundle(@RequestParam Long bundleId, @RequestParam Boolean isPublic) {
+        if(isPublic){
+            ServiceReturnBundleDto findBundle = bundleService.changeToPublic(bundleId); //TODO
+        }
     }
 
-    @PostMapping("/{bundleId}/like")
+    @PostMapping("/like/{bundleId}")
     public void addLikeCount(@PathVariable Long bundleId) {
         bundleService.addLikeCont(bundleId);
+    }
+
+    @GetMapping("/s3url/{bundleId}")
+    public BundleReturnDto getBundle(@RequestParam Long bundleId) {
+        ServiceReturnBundleDto findBundle = bundleService.findBundleById(bundleId);
+        List<ServiceReturnPictureDto> pictures = findBundle.getPictures();
+        List<PictureReturnDto> pictureReturnDtos = new List<PictureReturnDto>;
+        for (ServiceReturnPictureDto picture : pictures) {
+            pictureReturnDtos.add(new PictureReturnDto(picture.getId(), picture.getOriginalName(), picture.getPictureByteArray(), picture.getPictureType()));
+        }
+        return new BundleReturnDto(findBundle.getId(), pictureReturnDtos, findBundle.getBundleType());
     }
 }
