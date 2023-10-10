@@ -1,10 +1,9 @@
 package kuding.petudio.controller;
 
-import kuding.petudio.controller.dto.BundleUploadDTO;
-import kuding.petudio.domain.BundleType;
-import kuding.petudio.domain.Picture;
+import kuding.petudio.controller.dto.BaseDto;
+import kuding.petudio.controller.dto.BundleReturnDto;
+import kuding.petudio.controller.dto.PictureReturnDto;
 import kuding.petudio.domain.PictureType;
-import kuding.petudio.service.AmazonService;
 import kuding.petudio.service.BundleService;
 import kuding.petudio.service.PictureService;
 import kuding.petudio.service.dto.ServiceParamPictureDto;
@@ -12,11 +11,11 @@ import kuding.petudio.service.dto.ServiceReturnBundleDto;
 import kuding.petudio.service.dto.ServiceReturnPictureDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,20 +29,16 @@ public class BundleController {
 
     private final BundleService bundleService;
     private final PictureService pictureService;
-    private final AmazonService amazonService;
 
+    /**
+     * Bundle 목록 조회
+     * @return JSON 형식 데이터
+     */
     @GetMapping
     @ResponseBody
-    public List<ServiceReturnBundleDto> bundleList(
-            @RequestParam int pageOffset,
-            @RequestParam int pageSize) {
-        List<ServiceReturnBundleDto> recentBundles = bundleService.findRecentBundles(pageOffset, pageSize);
+    public List<ServiceReturnBundleDto> bundleList(@RequestParam int pageOffset, @RequestParam int pageSize) {
 
-//        ServiceReturnPictureDto testDTO = new ServiceReturnPictureDto(1L, "test", new byte['1'], PictureType.BEFORE);
-//        List<ServiceReturnPictureDto> serviceReturnPictureDtos = new ArrayList<>();
-//        serviceReturnPictureDtos.add(testDTO);
-//        ServiceReturnBundleDto testData = new ServiceReturnBundleDto(1L, serviceReturnPictureDtos, ANIMAL_TO_HUMAN);
-//        recentBundles.add(testData); //테스트용
+        List<ServiceReturnBundleDto> recentBundles = bundleService.findRecentBundles(pageOffset, pageSize);
         return recentBundles;
     }
 
@@ -53,32 +48,13 @@ public class BundleController {
      */
     @ResponseBody
     @PostMapping("/upload")
-    public List<ServiceParamPictureDto> uploadBeforePicture(@RequestParam("beforePicture") MultipartFile beforePicture){
-        ServiceParamPictureDto beforePictureDto = new ServiceParamPictureDto(beforePicture.getOriginalFilename(),beforePicture,PictureType.BEFORE);
-        ServiceParamPictureDto afterPictureDto = pictureService.animalToHuman(beforePictureDto);
-        List<ServiceParamPictureDto> pictureDtos = new ArrayList<>();
-        pictureDtos.add(beforePictureDto);
-        pictureDtos.add(afterPictureDto);
-        return pictureDtos;
+    public BaseDto uploadBeforePicture(@RequestParam("beforePicture") MultipartFile beforePicture) throws IOException {
+        ServiceParamPictureDto beforePictureDto = new ServiceParamPictureDto(beforePicture.getOriginalFilename(), beforePicture, PictureType.BEFORE);
+        pictureService.animalToHuman(beforePictureDto);
+        BaseDto baseDto = new BaseDto();
+        baseDto.setData(null);
+        return baseDto;
     }
-
-//    /**
-//     * 생성 버튼 눌렀을 때 -> 프론트에서 처리
-//     * 1.before 이미지가 저장되어 있는 Bundle을 조회
-//     * 2.Picture 서비스의 AI 메서드를 통해 afterImage 생성
-//     * 3.조회한 번들에 afterImage 정보를 담아 다시 DB에 저장
-//     */
-//    @PostMapping("/upload/{bundleId}")
-//    public void makeAfterImage(@PathVariable Long bundleId) {
-//        ServiceReturnBundleDto findBundle = bundleService.findBundleById(bundleId); //번들에서 before 이미지가 저장되어 있는 번들 조회
-//        List<ServiceReturnPictureDto> bundlePictures = findBundle.getPictures(); //조회한 번들에서 이미지 정보 가져옴
-//        ServiceReturnPictureDto returnBeforePicture = bundlePictures.get(0); //before 이미지 정보
-//        MultipartFile multipartFile = amazonService.convertByteArrayToMultiFile(returnBeforePicture.getPictureByteArray());
-//        ServiceParamPictureDto beforePicture = new ServiceParamPictureDto(returnBeforePicture.getOriginalName(), multipartFile, returnBeforePicture.getPictureType());
-//        ServiceParamPictureDto afterPicture = pictureService.animalToHuman(beforePicture);
-//
-//    }
-
 
     /**
      * 프론트에서 두 사진에 대한 DTO를 받아 DB에 저장한다.
@@ -86,21 +62,25 @@ public class BundleController {
      * 주고 받는 데이터 형식 정리 필요
      */
     @PostMapping("/new")
-    public void uploadBundle(@RequestBody BundleUploadDTO bundleUploadDTO) {
-
-        List<ServiceParamPictureDto> pictureDtos = bundleUploadDTO.getPictureDtos();
-        String bundleTitle = bundleUploadDTO.getBundleTitle();
-
-        bundleService.saveBundleBindingPictures(pictureDtos, bundleTitle, ANIMAL_TO_HUMAN); // 게시글 업로드
+    public void uploadBundle(@RequestParam Long bundleId, @RequestParam Boolean isPublic) {
+        if(isPublic){
+            ServiceReturnBundleDto findBundle = bundleService.changeToPublic(bundleId); //TODO
+        }
     }
 
-    private ServiceParamPictureDto makeServiceParamPictureDto(MultipartFile multipartFile, PictureType pictureType) {
-        String originalName = multipartFile.getOriginalFilename();
-        return new ServiceParamPictureDto(originalName, multipartFile, pictureType);
-    }
-
-    @PostMapping("/{bundleId}/like")
+    @PostMapping("/like/{bundleId}")
     public void addLikeCount(@PathVariable Long bundleId) {
         bundleService.addLikeCont(bundleId);
+    }
+
+    @GetMapping("/s3url/{bundleId}")
+    public BundleReturnDto getBundle(@RequestParam Long bundleId) {
+        ServiceReturnBundleDto findBundle = bundleService.findBundleById(bundleId);
+        List<ServiceReturnPictureDto> pictures = findBundle.getPictures();
+        List<PictureReturnDto> pictureReturnDtos = new List<PictureReturnDto>;
+        for (ServiceReturnPictureDto picture : pictures) {
+            pictureReturnDtos.add(new PictureReturnDto(picture.getId(), picture.getOriginalName(), picture.getPictureByteArray(), picture.getPictureType()));
+        }
+        return new BundleReturnDto(findBundle.getId(), pictureReturnDtos, findBundle.getBundleType());
     }
 }
