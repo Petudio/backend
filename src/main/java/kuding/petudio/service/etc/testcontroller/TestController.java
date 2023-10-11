@@ -4,7 +4,6 @@ import kuding.petudio.domain.Bundle;
 import kuding.petudio.domain.BundleType;
 import kuding.petudio.domain.PictureType;
 import kuding.petudio.repository.BundleRepository;
-import kuding.petudio.repository.PictureRepository;
 import kuding.petudio.service.BundleService;
 import kuding.petudio.service.AiPictureService;
 import kuding.petudio.service.dto.ServiceParamPictureDto;
@@ -25,8 +24,6 @@ public class TestController {
     private BundleService bundleService;
     @Autowired
     private BundleRepository bundleRepository;
-    @Autowired
-    private PictureRepository pictureRepository;
     @Autowired
     private AiPictureService aiPictureService;
 

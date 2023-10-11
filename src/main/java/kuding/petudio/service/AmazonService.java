@@ -4,7 +4,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
-import kuding.petudio.service.etc.callback.ExceptionResolveTemplate;
+import kuding.petudio.service.etc.callback.CheckedExceptionConverterTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,20 +18,20 @@ import java.io.File;
 public class AmazonService{
 
     private final AmazonS3Client amazonS3Client;
-    private final ExceptionResolveTemplate exceptionResolveTemplate;
+    private final CheckedExceptionConverterTemplate checkedExceptionConverterTemplate;
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
     @Autowired
     public AmazonService(AmazonS3Client amazonS3Client) {
         this.amazonS3Client = amazonS3Client;
-        exceptionResolveTemplate = new ExceptionResolveTemplate();
+        checkedExceptionConverterTemplate = new CheckedExceptionConverterTemplate();
     }
 
     public byte[] getPictureBytesFromS3(String storedName) {
         S3Object object = amazonS3Client.getObject(bucket, storedName);
         S3ObjectInputStream is = object.getObjectContent();
-        return exceptionResolveTemplate.execute(is::readAllBytes);
+        return checkedExceptionConverterTemplate.execute(is::readAllBytes);
     }
 
     public String getPictureS3Url(String storedName){
@@ -42,7 +42,7 @@ public class AmazonService{
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentType(pictureFile.getContentType());
         metadata.setContentLength(pictureFile.getSize());
-        exceptionResolveTemplate.execute(() -> {
+        checkedExceptionConverterTemplate.execute(() -> {
             amazonS3Client.putObject(bucket, storedPictureName, pictureFile.getInputStream(), metadata);
             return null;
         });

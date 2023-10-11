@@ -1,12 +1,12 @@
 package kuding.petudio.service;
 
 import kuding.petudio.domain.PictureType;
-import kuding.petudio.repository.PictureRepository;
 import kuding.petudio.service.dto.ServiceParamPictureDto;
 import kuding.petudio.service.dto.ServiceReturnBundleDto;
 import kuding.petudio.service.dto.ServiceReturnPictureDto;
-import kuding.petudio.service.etc.callback.ExceptionResolveTemplate;
+import kuding.petudio.service.etc.callback.CheckedExceptionConverterTemplate;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -24,14 +24,14 @@ import java.util.List;
 @Service
 public class AiPictureService {
 
-    private final PictureRepository pictureRepository;
     private final AmazonService amazonService;
     private final BundleService bundleService;
+    //로컬 저장소의 base url
     @Value("${local.repository.baseurl}")
     private String baseUrl;
 
-    public AiPictureService(PictureRepository pictureRepository, AmazonService amazonService, BundleService bundleService) {
-        this.pictureRepository = pictureRepository;
+    @Autowired
+    public AiPictureService( AmazonService amazonService, BundleService bundleService) {
         this.amazonService = amazonService;
         this.bundleService = bundleService;
     }
@@ -66,18 +66,23 @@ public class AiPictureService {
 
     @Async
     public void createSampleAfterPicture(Long bundleId) {
+        //번들을 찾는다.
         ServiceReturnBundleDto bundle = bundleService.findBundleById(bundleId);
         List<ServiceReturnPictureDto> pictures = bundle.getPictures();
+        //해당 번들에서 beforePicture을 찾는다.
         ServiceReturnPictureDto beforePicture = pictures.stream()
                 .filter(picture -> picture.getPictureType() == PictureType.BEFORE)
                 .findAny().orElseThrow(IllegalStateException::new);
+        //before Picture의 byte array를 s3에서 찾는다.
         byte[] beforePictureBytes = amazonService.getPictureBytesFromS3(beforePicture.getStoredName());
 
+        //로컬 저장소에서 해당 번들의 아이디를 가지는 폴더를 생성한다, 해당 폴더에 해당 번들과 관련된 모든 사진파일을 저장한다.
         File bundleFolder = new File(baseUrl + "/" +bundleId);
         bundleFolder.mkdir();
 
+        //beforePicture 파일을 로컬 폴더에 저장한다.
         File beforePictureFile = new File(baseUrl + "/" + bundleId + "/" + beforePicture.getOriginalName());
-        ExceptionResolveTemplate template = new ExceptionResolveTemplate();
+        CheckedExceptionConverterTemplate template = new CheckedExceptionConverterTemplate();
         template.execute(() -> {
             boolean newFile = beforePictureFile.createNewFile();
             log.info("newFile = {}", newFile);
@@ -87,7 +92,7 @@ public class AiPictureService {
             return null;
         });
 
-        //TODO beforePictureFile과 AI 모델을 이용해 새로운 afterPicture 생성
+        //TODO beforePictureFile과 AI 모델을 이용해 새로운 afterPicture 생성, 여기서는 단순히 복사만 함.
         String originalNameAfter = createOriginalNameAfter(beforePicture.getOriginalName());
         log.info("after name = {}", originalNameAfter);
         File afterPictureFile = new File(baseUrl + "/" + bundleId + "/" + originalNameAfter);
@@ -98,6 +103,7 @@ public class AiPictureService {
 
         byte[] buf = new byte[1024];
 
+        //afterPicture 파일을 로컬 폴더에 저장한다.
         template.execute(() -> {
             int readData;
             while ((readData = beforePictureInputStream.read(buf)) > 0) {
@@ -114,11 +120,12 @@ public class AiPictureService {
         });
 //        TODO=========================================
 
+        //DB에 afterPicture에 대한 내용 저장하고, s3에 저장하기
         ArrayList<File> files = new ArrayList<>();
         files.add(afterPictureFile);
         bundleService.addAfterPicturesToBundle(bundleId, files);
 
-        //TODO 파일 삭제하기, FileUtils를 통해 한번에 삭제하도록 리팩토링?
+        //로컬 파일 삭제하기, FileUtils를 통해 한번에 삭제하도록 리팩토링?
         beforePictureFile.delete();
         afterPictureFile.delete();
         bundleFolder.delete();
