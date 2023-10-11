@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import javax.annotation.PostConstruct;
 import java.util.TimeZone;
 
+@EnableAsync
 @EnableJpaAuditing
 @SpringBootApplication
 public class PetudioApplication {

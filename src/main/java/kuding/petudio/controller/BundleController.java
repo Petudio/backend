@@ -5,7 +5,7 @@ import kuding.petudio.controller.dto.BundleReturnDto;
 import kuding.petudio.controller.dto.PictureReturnDto;
 import kuding.petudio.domain.PictureType;
 import kuding.petudio.service.BundleService;
-import kuding.petudio.service.PictureService;
+import kuding.petudio.service.AiPictureService;
 import kuding.petudio.service.dto.ServiceParamPictureDto;
 import kuding.petudio.service.dto.ServiceReturnBundleDto;
 import kuding.petudio.service.dto.ServiceReturnPictureDto;
@@ -19,8 +19,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static kuding.petudio.domain.BundleType.ANIMAL_TO_HUMAN;
-
 @Slf4j
 @Controller
 @RequiredArgsConstructor
@@ -28,7 +26,7 @@ import static kuding.petudio.domain.BundleType.ANIMAL_TO_HUMAN;
 public class BundleController {
 
     private final BundleService bundleService;
-    private final PictureService pictureService;
+    private final AiPictureService aiPictureService;
 
     /**
      * Bundle 목록 조회
@@ -38,7 +36,7 @@ public class BundleController {
     @ResponseBody
     public List<ServiceReturnBundleDto> bundleList(@RequestParam int pageOffset, @RequestParam int pageSize) {
 
-        List<ServiceReturnBundleDto> recentBundles = bundleService.findRecentBundles(pageOffset, pageSize);
+        List<ServiceReturnBundleDto> recentBundles = bundleService.findRecentPublicBundles(pageOffset, pageSize);
         return recentBundles;
     }
 
@@ -50,7 +48,7 @@ public class BundleController {
     @PostMapping("/upload")
     public BaseDto uploadBeforePicture(@RequestParam("beforePicture") MultipartFile beforePicture) throws IOException {
         ServiceParamPictureDto beforePictureDto = new ServiceParamPictureDto(beforePicture.getOriginalFilename(), beforePicture, PictureType.BEFORE);
-        pictureService.animalToHuman(beforePictureDto);
+        aiPictureService.animalToHuman(beforePictureDto);
         BaseDto baseDto = new BaseDto();
         baseDto.setData(null);
         return baseDto;
@@ -64,22 +62,22 @@ public class BundleController {
     @PostMapping("/new")
     public void uploadBundle(@RequestParam Long bundleId, @RequestParam Boolean isPublic) {
         if(isPublic){
-            ServiceReturnBundleDto findBundle = bundleService.changeToPublic(bundleId); //TODO
+            bundleService.changeToPublic(bundleId); //TODO
         }
     }
 
     @PostMapping("/like/{bundleId}")
     public void addLikeCount(@PathVariable Long bundleId) {
-        bundleService.addLikeCont(bundleId);
+        bundleService.addLikeCount(bundleId);
     }
 
     @GetMapping("/s3url/{bundleId}")
     public BundleReturnDto getBundle(@RequestParam Long bundleId) {
         ServiceReturnBundleDto findBundle = bundleService.findBundleById(bundleId);
         List<ServiceReturnPictureDto> pictures = findBundle.getPictures();
-        List<PictureReturnDto> pictureReturnDtos = new List<PictureReturnDto>;
+        List<PictureReturnDto> pictureReturnDtos = new ArrayList<PictureReturnDto>();
         for (ServiceReturnPictureDto picture : pictures) {
-            pictureReturnDtos.add(new PictureReturnDto(picture.getId(), picture.getOriginalName(), picture.getPictureByteArray(), picture.getPictureType()));
+            pictureReturnDtos.add(new PictureReturnDto(picture.getId(), picture.getOriginalName(), picture.getPictureS3Url(), picture.getPictureType()));
         }
         return new BundleReturnDto(findBundle.getId(), pictureReturnDtos, findBundle.getBundleType());
     }
