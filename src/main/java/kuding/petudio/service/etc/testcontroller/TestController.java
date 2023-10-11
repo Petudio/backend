@@ -2,24 +2,15 @@ package kuding.petudio.service.etc.testcontroller;
 
 import kuding.petudio.domain.Bundle;
 import kuding.petudio.domain.BundleType;
-import kuding.petudio.domain.Picture;
 import kuding.petudio.domain.PictureType;
 import kuding.petudio.repository.BundleRepository;
 import kuding.petudio.repository.PictureRepository;
 import kuding.petudio.service.BundleService;
-import kuding.petudio.service.PictureService;
+import kuding.petudio.service.AiPictureService;
 import kuding.petudio.service.dto.ServiceParamPictureDto;
 import kuding.petudio.service.dto.ServiceReturnBundleDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -37,48 +28,35 @@ public class TestController {
     @Autowired
     private PictureRepository pictureRepository;
     @Autowired
-    private PictureService pictureService;
+    private AiPictureService aiPictureService;
 
-    @PostMapping("/test/picture")
-    public String uploadTestFile(@RequestParam("picture") MultipartFile picture) {
-        ServiceParamPictureDto serviceParamPictureDto = new ServiceParamPictureDto(picture.getOriginalFilename(), picture, PictureType.BEFORE);
+    /**
+     * ai 생성 모델에 대한 샘플 컨트롤러
+     * @param picture1
+     * @return
+     */
+    @PostMapping("/test/process")
+    public String process(@RequestParam("picture1") MultipartFile picture1) {
         List<ServiceParamPictureDto> pictures = new ArrayList<>();
-        pictures.add(serviceParamPictureDto);
-        bundleService.saveBundleBindingPictures(pictures, "example", BundleType.ANIMAL_TO_HUMAN);
+        ServiceParamPictureDto picture = new ServiceParamPictureDto(picture1.getOriginalFilename(), picture1, PictureType.BEFORE);
+        pictures.add(picture);
+        Long bundleId = bundleService.createBundleBindingBeforePictures(pictures, "sample", BundleType.SAMPLE);//before picture에 대해 먼저 번들을 생성함
+        aiPictureService.createSampleAfterPicture(bundleId);//async함수, beforePicture를 통해 afterPicture를 생성하고 이를 위에서 이미 만들어 놓은 bundle에 저장
         return "ok";
     }
 
-    @PostMapping("/test/upload-picture-pair")
-    public String uploadTestFile(@RequestParam("picture1") MultipartFile picture1, @RequestParam("picture2") MultipartFile picture2) {
-        ServiceParamPictureDto serviceParamPictureDto1 = new ServiceParamPictureDto(picture1.getOriginalFilename(), picture1, PictureType.BEFORE);
-        ServiceParamPictureDto serviceParamPictureDto2 = new ServiceParamPictureDto(picture2.getOriginalFilename(), picture2, PictureType.AFTER);
-        List<ServiceParamPictureDto> pictures = new ArrayList<>();
-        pictures.add(serviceParamPictureDto1);
-        pictures.add(serviceParamPictureDto2);
-        bundleService.saveBundleBindingPictures(pictures, "example", BundleType.ANIMAL_TO_HUMAN);
+    @GetMapping("/test/changeToPublic")
+    public String changeAllToPublic() {
+        List<Bundle> bundles = bundleRepository.findAll();
+        bundles.stream()
+                .forEach(bundle -> bundleService.changeToPublic(bundle.getId()));
         return "ok";
     }
 
-    @GetMapping("/test/getS3Url")
-    public String getS3Url() {
-        List<ServiceReturnBundleDto> recentBundles = bundleService.findRecentBundles(0, 5);
-        log.info("recent Bundles = {}", recentBundles);
-        return recentBundles.get(0).getPictures().get(0).getPictureS3Url();
-    }
-
-    @GetMapping("/test/getAll")
-    public String getAll() {
-        List<Bundle> all = bundleRepository.findAll();
-        log.info("all = {}", all);
-        List<Picture> all2 = pictureRepository.findAll();
-        log.info("all2 = {}", all2);
-        return "ok";
-    }
-
-    @GetMapping("/test/blockAiService1")
-    public String getBlockService() {
-        pictureService.animalToHuman(null);
-        log.info("before return");
-        return "ok";
+    @GetMapping("/test/getRecentPublic")
+    public List<ServiceReturnBundleDto> getRecentPublic() {
+        List<ServiceReturnBundleDto> recentPublicBundles = bundleService.findRecentPublicBundles(0, 5);
+        log.info("bundle size = {}", recentPublicBundles.size());
+        return recentPublicBundles;
     }
 }

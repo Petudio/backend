@@ -1,5 +1,6 @@
 package kuding.petudio.domain;
 
+import kuding.petudio.domain.converter.BooleanToYNConverter;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,9 @@ public class Bundle extends BaseTimeEntity {
 
     public Bundle(String title, BundleType bundleType) {
         this.title = title;
-        likeCount = 0;
+        this.likeCount = 0;
+        this.isPublic = false;
+        this.existsAfterPicture = false;
         this.bundleType = bundleType;
     }
 
@@ -32,6 +35,12 @@ public class Bundle extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private BundleType bundleType;
 
+    @Convert(converter = BooleanToYNConverter.class)
+    private boolean isPublic;
+
+    @Convert(converter = BooleanToYNConverter.class)
+    private boolean existsAfterPicture;
+
     private int likeCount;
 
     public void addPicture(Picture picture) {
@@ -41,5 +50,13 @@ public class Bundle extends BaseTimeEntity {
 
     public void addLikeCount() {
         likeCount++;
+    }
+
+    public void changeToPublic() {
+        this.isPublic = true;
+    }
+
+    public void completeCreatingAfterPicture() {
+        this.existsAfterPicture = true;
     }
 }
