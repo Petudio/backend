@@ -113,6 +113,11 @@ public class BundleService {
         return saveBundle.getId();
     }
 
+    /**
+     * after picture에 대한 정보를 DB에 저장하고, s3에 사진 파일을 저장한다.
+     * @param bundleId
+     * @param afterPictures
+     */
     public void addAfterPicturesToBundle(Long bundleId, List<File> afterPictures) {
         Bundle findBundle = bundleRepository.findById(bundleId).orElseThrow(NoSuchElementException::new);
         List<Pair<Picture, File>> pairs = new ArrayList<>();
