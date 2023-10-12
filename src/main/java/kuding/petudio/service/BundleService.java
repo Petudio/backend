@@ -53,7 +53,7 @@ public class BundleService {
             ServiceReturnPictureDto pictureDto = new ServiceReturnPictureDto(picture.getId(), picture.getOriginalName(), picture.getStoredName(), pictureS3Url, picture.getPictureType());
             pictureDtoList.add(pictureDto);
         }
-        return new ServiceReturnBundleDto(bundle.getId(), pictureDtoList, bundle.getBundleType());
+        return new ServiceReturnBundleDto(bundle.getId(), pictureDtoList, bundle.getBundleType(), bundle.getLikeCount());
     }
 
     /**
@@ -77,7 +77,7 @@ public class BundleService {
                 ServiceReturnPictureDto serviceReturnPictureDto = new ServiceReturnPictureDto(picture.getId(), picture.getOriginalName(), picture.getStoredName(),pictureS3Url, picture.getPictureType());
                 pictureDtoList.add(serviceReturnPictureDto);
             }
-            ServiceReturnBundleDto serviceReturnBundleDto = new ServiceReturnBundleDto(bundle.getId(), pictureDtoList, bundle.getBundleType());
+            ServiceReturnBundleDto serviceReturnBundleDto = new ServiceReturnBundleDto(bundle.getId(), pictureDtoList, bundle.getBundleType(), bundle.getLikeCount());
             serviceReturnBundleDtoList.add(serviceReturnBundleDto);
         }
         return serviceReturnBundleDtoList;
