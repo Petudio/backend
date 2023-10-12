@@ -34,7 +34,16 @@ public class BundleController {
     @GetMapping
     @ResponseBody
     public BaseDto bundleList(@RequestParam int pageOffset, @RequestParam int pageSize) {
-        List<ServiceReturnBundleDto> recentBundles = bundleService.findRecentPublicBundles(pageOffset, pageSize);
+        List<ServiceReturnBundleDto> findRecentBundles = bundleService.findRecentPublicBundles(pageOffset, pageSize);
+        List<BundleReturnDto> recentBundles = new ArrayList<>();
+        for (ServiceReturnBundleDto findRecentBundle : findRecentBundles) {
+            List<ServiceReturnPictureDto> findPictures = findRecentBundle.getPictures();
+            List<PictureReturnDto> recentPictures = new ArrayList<>();
+            for (ServiceReturnPictureDto findPicture : findPictures) {
+                recentPictures.add(new PictureReturnDto(findPicture.getId(), findPicture.getOriginalName(), findPicture.getPictureS3Url(), findPicture.getPictureType()));
+            }
+            recentBundles.add(new BundleReturnDto(findRecentBundle.getId(), recentPictures, findRecentBundle.getBundleType()));
+        }
         BaseDto baseDto = new BaseDto();
         baseDto.setData(recentBundles);
         return baseDto;
