@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Controller
@@ -35,18 +36,30 @@ public class BundleController {
     @ResponseBody
     public BaseDto bundleList(@RequestParam int pageOffset, @RequestParam int pageSize) {
         List<ServiceReturnBundleDto> findRecentBundles = bundleService.findRecentPublicBundles(pageOffset, pageSize);
-        List<BundleReturnDto> recentBundles = new ArrayList<>();
-        for (ServiceReturnBundleDto findRecentBundle : findRecentBundles) {
-            List<ServiceReturnPictureDto> findPictures = findRecentBundle.getPictures();
-            List<PictureReturnDto> recentPictures = new ArrayList<>();
-            for (ServiceReturnPictureDto findPicture : findPictures) {
-                recentPictures.add(new PictureReturnDto(findPicture.getId(), findPicture.getOriginalName(), findPicture.getPictureS3Url(), findPicture.getPictureType()));
-            }
-            recentBundles.add(new BundleReturnDto(findRecentBundle.getId(), recentPictures, findRecentBundle.getBundleType()));
-        }
+
+        List<BundleReturnDto> recentBundles = findRecentBundles.stream()
+                .map(this::mapToBundleReturnDto)
+                .collect(Collectors.toList());
         BaseDto baseDto = new BaseDto();
         baseDto.setData(recentBundles);
         return baseDto;
+    }
+
+    private BundleReturnDto mapToBundleReturnDto(ServiceReturnBundleDto bundleDto) {
+        List<PictureReturnDto> recentPictures = bundleDto.getPictures().stream()
+                .map(this::mapToPictureReturnDto)
+                .collect(Collectors.toList());
+
+        return new BundleReturnDto(bundleDto.getId(), recentPictures, bundleDto.getBundleType());
+    }
+
+    private PictureReturnDto mapToPictureReturnDto(ServiceReturnPictureDto pictureDto) {
+        return new PictureReturnDto(
+                pictureDto.getId(),
+                pictureDto.getOriginalName(),
+                pictureDto.getPictureS3Url(),
+                pictureDto.getPictureType()
+        );
     }
 
     /**
