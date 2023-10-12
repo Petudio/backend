@@ -3,6 +3,7 @@ package kuding.petudio.controller;
 import kuding.petudio.controller.dto.BaseDto;
 import kuding.petudio.controller.dto.BundleReturnDto;
 import kuding.petudio.controller.dto.DtoConverter;
+import kuding.petudio.domain.BundleType;
 import kuding.petudio.domain.PictureType;
 import kuding.petudio.service.AiPictureService;
 import kuding.petudio.service.BundleService;
@@ -13,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,7 +32,6 @@ public class BundleController {
      * @return 번들 리스트에 대한 JSON 형식 데이터
      */
     @GetMapping
-    @ResponseBody
     public BaseDto bundleList(@RequestParam int pageOffset, @RequestParam int pageSize) {
         List<ServiceReturnBundleDto> findRecentBundles = bundleService.findRecentPublicBundles(pageOffset, pageSize);
 
@@ -44,11 +45,13 @@ public class BundleController {
      * AI 생성 전 Before 이미지 업로드
      * 업로드 된 이미지를 AI를 통해 변환 후 DB 저장 -> aiPictureService
      */
-    @ResponseBody
     @PostMapping("/upload")
-    public BaseDto uploadBeforePicture(@RequestPart("beforePicture") MultipartFile beforePicture){
-        ServiceParamPictureDto beforePictureDto = new ServiceParamPictureDto(beforePicture.getOriginalFilename(), beforePicture, PictureType.BEFORE);
-        aiPictureService.animalToHuman(beforePictureDto);
+    public BaseDto uploadBeforePicture(@RequestPart("beforePictures") List<MultipartFile> beforePictures){
+        List<ServiceParamPictureDto> pictureDtos = new ArrayList<>();
+        for (MultipartFile beforePicture : beforePictures) {
+            pictureDtos.add(new ServiceParamPictureDto(beforePicture.getOriginalFilename(), beforePicture, PictureType.BEFORE));
+        }
+        bundleService.createBundleBindingBeforePictures(pictureDtos,null, BundleType.ANIMAL_TO_HUMAN);
         return new BaseDto(null);
     }
 
