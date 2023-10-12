@@ -37,9 +37,7 @@ public class BundleController {
         List<BundleReturnDto> recentBundles = findRecentBundles.stream()
                 .map(DtoConverter::serviceReturnBundleToBundleReturn)
                 .collect(Collectors.toList());
-        BaseDto baseDto = new BaseDto();
-        baseDto.setData(recentBundles);
-        return baseDto;
+        return new BaseDto(recentBundles);
     }
 
     /**
@@ -51,9 +49,7 @@ public class BundleController {
     public BaseDto uploadBeforePicture(@RequestPart("beforePicture") MultipartFile beforePicture){
         ServiceParamPictureDto beforePictureDto = new ServiceParamPictureDto(beforePicture.getOriginalFilename(), beforePicture, PictureType.BEFORE);
         aiPictureService.animalToHuman(beforePictureDto);
-        BaseDto baseDto = new BaseDto();
-        baseDto.setData(null);
-        return baseDto;
+        return new BaseDto(null);
     }
 
     /**
@@ -63,26 +59,20 @@ public class BundleController {
     @PostMapping("/new/{bundleId}")
     public BaseDto uploadBundle(@PathVariable Long bundleId) {
         bundleService.changeToPublic(bundleId);
-        BaseDto baseDto = new BaseDto();
-        baseDto.setData(null);
-        return baseDto;
+        return new BaseDto(null);
     }
 
     @PostMapping("/like/{bundleId}")
     public BaseDto addLikeCount(@PathVariable Long bundleId) {
         bundleService.addLikeCount(bundleId);
-        BaseDto baseDto = new BaseDto();
-        baseDto.setData(null);
-        return baseDto;
+        return new BaseDto(null);
     }
 
     @GetMapping("/s3url/{bundleId}")
     public BaseDto getBundle(@PathVariable Long bundleId) {
         ServiceReturnBundleDto findBundle = bundleService.findBundleById(bundleId);
         BundleReturnDto bundleReturnDto = DtoConverter.serviceReturnBundleToBundleReturn(findBundle);
-        BaseDto baseDto = new BaseDto();
-        baseDto.setData(bundleReturnDto);
-        return baseDto;
+        return new BaseDto(bundleReturnDto);
     }
 }
 
