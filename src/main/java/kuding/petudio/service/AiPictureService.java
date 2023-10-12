@@ -36,29 +36,7 @@ public class AiPictureService {
         this.bundleService = bundleService;
     }
 
-    /**
-     *
-     * @param picture : 원본 이미지
-     * @return 생성 이미지
-     * 동물 이미지 -> 사람 이미지 생성
-     */
-    public ServiceParamPictureDto animalToHuman(ServiceParamPictureDto picture) {
-        //TODO AI알고리즘으로 이미지 생성, 생성된 이미지 return
-        System.out.println("sleep 실행 전");
 
-        try {
-
-            Thread.sleep(1000 * 10); //10초 대기
-
-        } catch (InterruptedException e) {
-
-            e.printStackTrace();
-
-        }
-
-        System.out.println("sleep 실행 후");
-        return null;//return afterImage
-    }
 
 
 
