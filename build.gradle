@@ -33,6 +33,13 @@ dependencies {
 //	aws 와의 연동
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
+	// Swagger2 gradle
+	implementation (group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'){
+		exclude module: 'swagger-annotations' exclude module: 'swagger-models'
+	}
+	implementation 'io.swagger:swagger-annotations:1.6.8'
+	implementation 'io.swagger:swagger-models:1.6.8'
+	implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
 
 }
 
