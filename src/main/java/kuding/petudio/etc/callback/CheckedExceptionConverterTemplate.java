@@ -1,4 +1,4 @@
-package kuding.petudio.service.etc.callback;
+package kuding.petudio.etc.callback;
 
 /**
  * 가급적 checked exception을 발생시키는 로직에 대해서만 사용한다.

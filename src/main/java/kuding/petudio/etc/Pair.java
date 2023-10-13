@@ -1,4 +1,4 @@
-package kuding.petudio.service.etc;
+package kuding.petudio.etc;
 
 import lombok.Data;
 
