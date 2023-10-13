@@ -1,4 +1,4 @@
-package kuding.petudio.service.etc.callback;
+package kuding.petudio.etc.callback;
 
 public interface CheckedExceptionConverterCallBack<T> {
 

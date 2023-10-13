@@ -1,4 +1,4 @@
-package kuding.petudio.service.etc.testcontroller;
+package kuding.petudio.etc.testcontroller;
 
 import kuding.petudio.domain.Bundle;
 import kuding.petudio.domain.BundleType;
@@ -37,7 +37,7 @@ public class TestController {
         List<ServiceParamPictureDto> pictures = new ArrayList<>();
         ServiceParamPictureDto picture = new ServiceParamPictureDto(picture1.getOriginalFilename(), picture1, PictureType.BEFORE);
         pictures.add(picture);
-        Long bundleId = bundleService.createBundleBindingBeforePictures(pictures, "sample", BundleType.SAMPLE);//before picture에 대해 먼저 번들을 생성함
+        Long bundleId = bundleService.createBundleBindingBeforePictures(pictures, "sample", BundleType.COPY);//before picture에 대해 먼저 번들을 생성함
         aiPictureService.createSampleAfterPicture(bundleId);//async함수, beforePicture를 통해 afterPicture를 생성하고 이를 위에서 이미 만들어 놓은 bundle에 저장
         return "ok";
     }

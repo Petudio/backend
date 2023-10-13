@@ -1,19 +1,22 @@
 package kuding.petudio.service;
 
 import kuding.petudio.domain.PictureType;
-import kuding.petudio.service.dto.ServiceParamPictureDto;
 import kuding.petudio.service.dto.ServiceReturnBundleDto;
 import kuding.petudio.service.dto.ServiceReturnPictureDto;
-import kuding.petudio.service.etc.callback.CheckedExceptionConverterTemplate;
+import kuding.petudio.etc.callback.CheckedExceptionConverterTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +32,8 @@ public class AiPictureService {
     //로컬 저장소의 base url
     @Value("${local.repository.baseurl}")
     private String baseUrl;
+    @Value("${petudio.ai.server.url}")
+    private String aiServerBaseUrl;
 
     @Autowired
     public AiPictureService( AmazonService amazonService, BundleService bundleService) {
@@ -92,6 +97,9 @@ public class AiPictureService {
             return null;
         });
 
+        String str = sampleRestRequest();
+        log.info("restTemplate = {}", str);
+
         template.execute(() -> {
             Thread.sleep(1000 * 10);
             return null;
@@ -107,6 +115,19 @@ public class AiPictureService {
         beforePictureFile.delete();
         afterPictureFile.delete();
         bundleFolder.delete();
+    }
+
+    private String sampleRestRequest() {
+        URI uri = UriComponentsBuilder
+                .fromUriString(aiServerBaseUrl)
+                .path("/hello")
+                .encode()
+                .build()
+                .toUri();
+
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> resp = restTemplate.getForEntity(uri, String.class);
+        return resp.getBody();
     }
 
     private String createOriginalNameAfter(String originalName) {
