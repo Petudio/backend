@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -90,6 +91,36 @@ public class TestController {
 
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         body.add("file", fileResource);
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                serverUrl,
+                HttpMethod.POST,
+                requestEntity,
+                String.class);
+        return "ok";
+    }
+
+    @PostMapping("/test/aiserver/multiple")
+    public String handleFileUpload(@RequestParam("files") List<MultipartFile> files) throws IOException {
+        String serverUrl = "http://localhost:8081/upload/multiple";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        for (MultipartFile file : files) {
+            ByteArrayResource fileResource = new ByteArrayResource(file.getBytes()){
+                @Override
+                public String getFilename() {
+                    return file.getOriginalFilename();
+                }
+            };
+            body.add("files",fileResource); //"files"가 AI 서버의 @RequestParam("files")와 매핑
+        }
 
         RestTemplate restTemplate = new RestTemplate();
 
