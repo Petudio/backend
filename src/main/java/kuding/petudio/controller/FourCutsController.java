@@ -3,7 +3,7 @@ package kuding.petudio.controller;
 import kuding.petudio.controller.dto.BaseDto;
 import kuding.petudio.domain.BundleType;
 import kuding.petudio.domain.PictureType;
-import kuding.petudio.service.AiPictureService;
+import kuding.petudio.service.AiServerCallService;
 import kuding.petudio.service.BundleService;
 import kuding.petudio.service.dto.ServiceParamPictureDto;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ import java.util.List;
 public class FourCutsController {
 
     private final BundleService bundleService;
-    private final AiPictureService aiPictureService;
+    private final AiServerCallService aiServerCallService;
 
     /**
      * AI 생성 전 Before 이미지 업로드
@@ -34,7 +34,7 @@ public class FourCutsController {
             pictureDtos.add(new ServiceParamPictureDto(beforePicture.getOriginalFilename(), beforePicture, PictureType.BEFORE));
         }
         Long bundleId = bundleService.createBundleBindingBeforePictures(pictureDtos, null, BundleType.ANIMAL_TO_HUMAN);
-        aiPictureService.createSampleAfterPicture(bundleId);
+        aiServerCallService.createCopyPictures(bundleId);
         return new BaseDto(null);
     }
 }

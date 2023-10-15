@@ -16,12 +16,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -118,23 +120,26 @@ public class BundleService {
      * @param bundleId
      * @param afterPictures
      */
-    public void addAfterPicturesToBundle(Long bundleId, List<File> afterPictures) {
+    public void addAfterPicturesToBundle(Long bundleId, List<MultipartFile> afterPictures) {
         Bundle findBundle = bundleRepository.findById(bundleId).orElseThrow(NoSuchElementException::new);
-        List<Pair<Picture, File>> pairs = new ArrayList<>();
 
-        for (File afterPicture : afterPictures) {
-            String storedName = createStoredName(afterPicture.getName());
-            Picture picture = new Picture(afterPicture.getName(), storedName, PictureType.AFTER);
-            findBundle.addPicture(picture);
-            pairs.add(new Pair<>(picture, afterPicture));
-        }
+        //
+        List<Pair<MultipartFile, String>> fileStoredPairList = afterPictures.stream()
+                .map(afterPicture -> new Pair<>(afterPicture, createStoredName(afterPicture.getOriginalFilename())))
+                .collect(Collectors.toList());
+
+        //DB에 저장
+        List<Picture> pictureList = fileStoredPairList.stream()
+                .map(fileStoredPair -> new Picture(fileStoredPair.getFirst().getOriginalFilename(), fileStoredPair.getSecond(), PictureType.AFTER))
+                .collect(Collectors.toList());
+        pictureList.forEach(findBundle::addPicture);
         findBundle.completeCreatingAfterPicture();
 
-        for (Pair<Picture, File> pair : pairs) {
-            Picture pictureEntity = pair.getFirst();
-            File pictureFile = pair.getSecond();
-            amazonService.saveJavaFileToS3(pictureFile, pictureEntity.getStoredName());
-        }
+        //S3에 저장
+        fileStoredPairList
+                .forEach(fileStoredPair ->{
+                    amazonService.saveMultipartFileToS3(fileStoredPair.getFirst(), fileStoredPair.getSecond());
+                });
     }
 
     /**

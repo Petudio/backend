@@ -3,7 +3,6 @@ package kuding.petudio.controller;
 import kuding.petudio.controller.dto.BaseDto;
 import kuding.petudio.controller.dto.BundleReturnDto;
 import kuding.petudio.controller.dto.DtoConverter;
-import kuding.petudio.service.AiPictureService;
 import kuding.petudio.service.BundleService;
 import kuding.petudio.service.dto.ServiceReturnBundleDto;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +22,7 @@ public class BundleController {
 
     /**
      * Bundle 목록 조회
+     *
      * @return 번들 리스트에 대한 JSON 형식 데이터
      */
     @GetMapping
@@ -36,8 +36,7 @@ public class BundleController {
     }
 
     /**
-     * @param bundleId
-     * 커뮤니티 업로드 버튼을 눌렀을 시 실행. 실제 업로드가 아닌 기존에 DB에 저장해둔 사진을 공개 상태로 전환
+     * @param bundleId 커뮤니티 업로드 버튼을 눌렀을 시 실행. 실제 업로드가 아닌 기존에 DB에 저장해둔 사진을 공개 상태로 전환
      */
     @PostMapping("/new/{bundleId}")
     public BaseDto uploadBundle(@PathVariable Long bundleId) {
@@ -57,5 +56,6 @@ public class BundleController {
         BundleReturnDto bundleReturnDto = DtoConverter.serviceReturnBundleToBundleReturn(findBundle);
         return new BaseDto(bundleReturnDto);
     }
+
 }
 
