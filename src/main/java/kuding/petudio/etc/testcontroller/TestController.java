@@ -1,24 +1,17 @@
 package kuding.petudio.etc.testcontroller;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import kuding.petudio.domain.Bundle;
 import kuding.petudio.domain.BundleType;
 import kuding.petudio.domain.PictureType;
 import kuding.petudio.repository.BundleRepository;
 import kuding.petudio.service.BundleService;
-import kuding.petudio.service.AiPictureService;
+import kuding.petudio.service.AiServerCallService;
 import kuding.petudio.service.dto.ServiceParamPictureDto;
 import kuding.petudio.service.dto.ServiceReturnBundleDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
 import org.springframework.http.*;
-import org.springframework.http.client.MultipartBodyBuilder;
-import org.springframework.ui.Model;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
@@ -27,9 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RestController
@@ -40,7 +31,7 @@ public class TestController {
     @Autowired
     private BundleRepository bundleRepository;
     @Autowired
-    private AiPictureService aiPictureService;
+    private AiServerCallService aiServerCallService;
 
 
     /**
@@ -55,7 +46,7 @@ public class TestController {
         ServiceParamPictureDto picture = new ServiceParamPictureDto(picture1.getOriginalFilename(), picture1, PictureType.BEFORE);
         pictures.add(picture);
         Long bundleId = bundleService.createBundleBindingBeforePictures(pictures, "sample", BundleType.COPY);//before picture에 대해 먼저 번들을 생성함
-        aiPictureService.createSampleAfterPicture(bundleId);//async함수, beforePicture를 통해 afterPicture를 생성하고 이를 위에서 이미 만들어 놓은 bundle에 저장
+        aiServerCallService.createCopyPictures(bundleId);//async함수, beforePicture를 통해 afterPicture를 생성하고 이를 위에서 이미 만들어 놓은 bundle에 저장
         return "ok";
     }
 

@@ -7,7 +7,7 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 
 @Component
-public class InitLocalStorage {
+public class InitComponent {
 
     @Value("${local.repository.baseurl}")
     private String baseUrl;
