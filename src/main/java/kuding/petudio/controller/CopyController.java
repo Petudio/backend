@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,7 +28,7 @@ public class CopyController {
     private final AiServerCallService aiServerCallService;
 
     @PostMapping("/upload")
-    public BaseDto uploadBeforePicture(@RequestParam("beforePictures") List<MultipartFile> beforePictures, @RequestParam("title") String title){
+    public BaseDto uploadBeforePicture(@RequestParam("beforePictures") List<MultipartFile> beforePictures, @RequestParam("title") String title) throws IOException {
         List<ServiceParamPictureDto> pictureDtoList = beforePictures.stream()
                 .map(beforePicture -> new ServiceParamPictureDto(beforePicture.getOriginalFilename(), beforePicture, PictureType.BEFORE))
                 .collect(Collectors.toList());

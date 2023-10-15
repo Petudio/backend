@@ -22,7 +22,7 @@ public class AiServerCallBackController {
 
     private final BundleService bundleService;
 
-    @PostMapping
+    @PostMapping("/addAfter")
     private String addAfter(Long bundleId, @RequestParam("afterPictures") List<MultipartFile> afterPictures) {
         List<ServiceParamPictureDto> pictureDtoList = afterPictures.stream()
                 .map(afterPicture -> new ServiceParamPictureDto(afterPicture.getOriginalFilename(), afterPicture, PictureType.AFTER))
