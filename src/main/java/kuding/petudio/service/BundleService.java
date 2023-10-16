@@ -120,17 +120,17 @@ public class BundleService {
      * @param bundleId
      * @param afterPictures
      */
-    public void addAfterPicturesToBundle(Long bundleId, List<MultipartFile> afterPictures) {
+    public void addAfterPicturesToBundle(Long bundleId, List<ServiceParamPictureDto> afterPictures) {
         Bundle findBundle = bundleRepository.findById(bundleId).orElseThrow(NoSuchElementException::new);
 
         //
-        List<Pair<MultipartFile, String>> fileStoredPairList = afterPictures.stream()
-                .map(afterPicture -> new Pair<>(afterPicture, createStoredName(afterPicture.getOriginalFilename())))
+        List<Pair<ServiceParamPictureDto, String>> fileStoredPairList = afterPictures.stream()
+                .map(afterPicture -> new Pair<>(afterPicture, createStoredName(afterPicture.getOriginalName())))
                 .collect(Collectors.toList());
 
         //DB에 저장
         List<Picture> pictureList = fileStoredPairList.stream()
-                .map(fileStoredPair -> new Picture(fileStoredPair.getFirst().getOriginalFilename(), fileStoredPair.getSecond(), PictureType.AFTER))
+                .map(fileStoredPair -> new Picture(fileStoredPair.getFirst().getOriginalName(), fileStoredPair.getSecond(), PictureType.AFTER))
                 .collect(Collectors.toList());
         pictureList.forEach(findBundle::addPicture);
         findBundle.completeCreatingAfterPicture();
@@ -138,7 +138,7 @@ public class BundleService {
         //S3에 저장
         fileStoredPairList
                 .forEach(fileStoredPair ->{
-                    amazonService.saveMultipartFileToS3(fileStoredPair.getFirst(), fileStoredPair.getSecond());
+                    amazonService.saveMultipartFileToS3(fileStoredPair.getFirst().getPictureFile(), fileStoredPair.getSecond());
                 });
     }
 

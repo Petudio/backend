@@ -27,7 +27,7 @@ public class AiServerCallBackController {
         List<ServiceParamPictureDto> pictureDtoList = afterPictures.stream()
                 .map(afterPicture -> new ServiceParamPictureDto(afterPicture.getOriginalFilename(), afterPicture, PictureType.AFTER))
                 .collect(Collectors.toList());
-        bundleService.addAfterPicturesToBundle(bundleId, afterPictures);
+        bundleService.addAfterPicturesToBundle(bundleId, pictureDtoList);
         return "ok";
     }
 }
