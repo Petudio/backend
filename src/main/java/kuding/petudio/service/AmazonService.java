@@ -47,8 +47,4 @@ public class AmazonService{
             return null;
         });
     }
-
-    public void saveJavaFileToS3(File pictureFile, String storedPictureName) {
-        amazonS3Client.putObject(bucket, storedPictureName, pictureFile);
-    }
 }
