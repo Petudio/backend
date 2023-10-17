@@ -8,6 +8,7 @@ import kuding.petudio.service.BundleService;
 import kuding.petudio.service.dto.ServiceParamPictureDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,9 +34,14 @@ public class FourCutsController {
         for (MultipartFile beforePicture : beforePictures) {
             pictureDtos.add(new ServiceParamPictureDto(beforePicture.getOriginalFilename(), beforePicture, PictureType.BEFORE));
         }
-        Long bundleId = bundleService.createBundleBindingBeforePictures(pictureDtos, null, BundleType.ANIMAL_TO_HUMAN);
-        aiServerCallService.createCopyPictures(bundleId);
-        return new BaseDto(null);
+        Long bundleId = bundleService.createBundleBindingBeforePictures(pictureDtos, null, BundleType.FOUR_AI_PICTURES);
+        return new BaseDto(bundleId);
+    }
+
+    @PostMapping("/generate/{bundleId}")
+    public BaseDto generateAiPicture(@PathVariable Long bundleId) {
+        ResponseEntity<String> responseEntity = aiServerCallService.createCopyPictures(bundleId);
+        return new BaseDto(responseEntity.getStatusCode());
     }
 }
 

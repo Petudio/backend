@@ -35,7 +35,7 @@ public class AiServerCallService {
         this.bundleService = bundleService;
     }
 
-    public void createCopyPictures(Long bundleId) {
+    public ResponseEntity<String> createCopyPictures(Long bundleId) {
         //번들을 찾는다.
         ServiceReturnBundleDto bundle = bundleService.findBundleById(bundleId);
         List<ServiceReturnPictureDto> pictureDtoList = bundle.getPictures();
@@ -64,6 +64,7 @@ public class AiServerCallService {
                 String.class
         );
         log.info("responseEntity = {}", responseEntity.getBody());
+        return responseEntity;
     }
 
     private MultiValueMap<String, Object> createBody(List<Pair<ServiceReturnPictureDto, byte[]>> pairList, Long bundleId) {
