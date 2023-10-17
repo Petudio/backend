@@ -38,9 +38,9 @@ public class BundleController {
     /**
      * @param bundleId 커뮤니티 업로드 버튼을 눌렀을 시 실행. 실제 업로드가 아닌 기존에 DB에 저장해둔 사진을 공개 상태로 전환
      */
-    @PostMapping("/new/{bundleId}")
-    public BaseDto uploadBundle(@PathVariable Long bundleId) {
-        bundleService.changeToPublic(bundleId);
+    @PostMapping("/new")
+    public BaseDto uploadBundle(@RequestParam("bundleId") Long bundleId, @RequestParam("title") String title) {
+        bundleService.changeToPublic(bundleId, title);
         return new BaseDto(null);
     }
 

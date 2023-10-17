@@ -34,7 +34,7 @@ public class FourCutsController {
         for (MultipartFile beforePicture : beforePictures) {
             pictureDtos.add(new ServiceParamPictureDto(beforePicture.getOriginalFilename(), beforePicture, PictureType.BEFORE));
         }
-        Long bundleId = bundleService.createBundleBindingBeforePictures(pictureDtos, null, BundleType.FOUR_AI_PICTURES);
+        Long bundleId = bundleService.createBundleBindingBeforePictures(pictureDtos, BundleType.FOUR_AI_PICTURES);
         return new BaseDto(bundleId);
     }
 

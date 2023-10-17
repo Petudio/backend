@@ -26,13 +26,15 @@ public class AiServerCallService {
 
     private final AmazonService amazonService;
     private final BundleService bundleService;
+    private final AiServerUrl aiServerUrl;
     @Value("${petudio.ai.server.url}")
     private String aiServerBaseUrl;
 
     @Autowired
-    public AiServerCallService(AmazonService amazonService, BundleService bundleService) {
+    public AiServerCallService(AmazonService amazonService, BundleService bundleService, AiServerUrl aiServerUrl) {
         this.amazonService = amazonService;
         this.bundleService = bundleService;
+        this.aiServerUrl = aiServerUrl;
     }
 
     public ResponseEntity<String> createCopyPictures(Long bundleId) {
@@ -57,8 +59,10 @@ public class AiServerCallService {
 
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
+
+        log.info("copy upload url = {}", aiServerUrl.COPY_UPLOAD);
         ResponseEntity<String> responseEntity = restTemplate.exchange(
-                aiServerBaseUrl + "/copy/upload",
+                aiServerUrl.COPY_UPLOAD,
                 HttpMethod.POST,
                 requestEntity,
                 String.class

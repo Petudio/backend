@@ -92,8 +92,8 @@ public class BundleService {
      * @param bundleType 어떠한 ai모델을 사용햇는가
      * @return bundle_id
      */
-    public Long createBundleBindingBeforePictures(List<ServiceParamPictureDto> serviceParamPictureDtos, String title , BundleType bundleType) {
-        Bundle bundle = new Bundle(title, bundleType);
+    public Long createBundleBindingBeforePictures(List<ServiceParamPictureDto> serviceParamPictureDtos, BundleType bundleType) {
+        Bundle bundle = new Bundle(bundleType);
         List<Pair<Picture, ServiceParamPictureDto>> pairs = new ArrayList<>();
 
         //DB에 저장
@@ -155,9 +155,9 @@ public class BundleService {
      * 해당 번들의 접근을 public으로 전환한다.
      * @param bundleId
      */
-    public void changeToPublic(Long bundleId) {
+    public void changeToPublic(Long bundleId, String title) {
         Bundle findBundle = bundleRepository.findById(bundleId).orElseThrow(NoSuchElementException::new);
-        findBundle.changeToPublic();
+        findBundle.changeToPublic(title);
     }
 
 
