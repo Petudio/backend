@@ -14,8 +14,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Bundle extends BaseTimeEntity {
 
-    public Bundle(String title, BundleType bundleType) {
-        this.title = title;
+    public Bundle(BundleType bundleType) {
         this.likeCount = 0;
         this.isPublic = false;
         this.existsAfterPicture = false;
@@ -52,8 +51,9 @@ public class Bundle extends BaseTimeEntity {
         likeCount++;
     }
 
-    public void changeToPublic() {
+    public void changeToPublic(String title) {
         this.isPublic = true;
+        this.title = title;
     }
 
     public void completeCreatingAfterPicture() {

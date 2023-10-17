@@ -1,17 +1,18 @@
 package kuding.petudio.controller;
 
 import kuding.petudio.controller.dto.BaseDto;
+import kuding.petudio.controller.dto.BundleReturnDto;
+import kuding.petudio.controller.dto.DtoConverter;
 import kuding.petudio.domain.BundleType;
 import kuding.petudio.domain.PictureType;
 import kuding.petudio.service.AiServerCallService;
 import kuding.petudio.service.BundleService;
 import kuding.petudio.service.dto.ServiceParamPictureDto;
+import kuding.petudio.service.dto.ServiceReturnBundleDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -27,13 +28,28 @@ public class CopyController {
     private final BundleService bundleService;
     private final AiServerCallService aiServerCallService;
 
+    /**
+     * 프론트에서 건네준 before pictures를 이용해 bundle 생성, before pictures를 단순히 카피해주는 기능
+     *
+     * @param beforePictures
+     * @param title
+     * @return
+     * @throws IOException
+     */
     @PostMapping("/upload")
-    public BaseDto uploadBeforePicture(@RequestParam("beforePictures") List<MultipartFile> beforePictures, @RequestParam("title") String title) throws IOException {
+    public BaseDto uploadBeforePicture(@RequestParam("beforePictures") List<MultipartFile> beforePictures) throws IOException {
         List<ServiceParamPictureDto> pictureDtoList = beforePictures.stream()
                 .map(beforePicture -> new ServiceParamPictureDto(beforePicture.getOriginalFilename(), beforePicture, PictureType.BEFORE))
                 .collect(Collectors.toList());
-        Long bundleId = bundleService.createBundleBindingBeforePictures(pictureDtoList, title, BundleType.COPY);
-        aiServerCallService.createCopyPictures(bundleId);
-        return new BaseDto("ok");
+        Long bundleId = bundleService.createBundleBindingBeforePictures(pictureDtoList, BundleType.COPY);
+        ServiceReturnBundleDto bundleDto = bundleService.findBundleById(bundleId);
+        BundleReturnDto bundle = DtoConverter.serviceReturnBundleToBundleReturn(bundleDto);
+        return new BaseDto(bundle);
+    }
+
+    @PostMapping("/generate/{bundleId}")
+    public BaseDto generateAiPicture(@PathVariable Long bundleId) {
+        ResponseEntity<String> responseEntity = aiServerCallService.createCopyPictures(bundleId);
+        return new BaseDto(responseEntity.getStatusCode());
     }
 }
