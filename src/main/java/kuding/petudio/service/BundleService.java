@@ -3,7 +3,6 @@ package kuding.petudio.service;
 import kuding.petudio.domain.Bundle;
 import kuding.petudio.domain.BundleType;
 import kuding.petudio.domain.Picture;
-import kuding.petudio.domain.PictureType;
 import kuding.petudio.repository.BundleRepository;
 import kuding.petudio.service.dto.ServiceReturnBundleDto;
 import kuding.petudio.service.dto.ServiceParamPictureDto;
@@ -16,9 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -86,60 +83,45 @@ public class BundleService {
     }
 
     /**
-     * 넘겨받은 'before' pictures를 묶어서 하나의 bundle로 DB에 저장
-     * pictures를 S3에 저장
-     * @param serviceParamPictureDtos 하나의 번들에 묶일 picture들
-     * @param bundleType 어떠한 ai모델을 사용햇는가
-     * @return bundle_id
+     * bundle을 생성하고 해당 bundle의 id return
+     * @param bundleType
+     * @return
      */
-    public Long createBundleBindingBeforePictures(List<ServiceParamPictureDto> serviceParamPictureDtos, BundleType bundleType) {
-        Bundle bundle = new Bundle(bundleType);
-        List<Pair<Picture, ServiceParamPictureDto>> pairs = new ArrayList<>();
-
-        //DB에 저장
-        for (ServiceParamPictureDto serviceParamPictureDto : serviceParamPictureDtos) {
-            String storedName = createStoredName(serviceParamPictureDto.getOriginalName());
-            Picture picture = new Picture(serviceParamPictureDto.getOriginalName(), storedName, PictureType.BEFORE);
-            pairs.add(new Pair<>(picture, serviceParamPictureDto));
-            bundle.addPicture(picture);
-        }
-        Bundle saveBundle = bundleRepository.save(bundle);
-
-        //s3에 저장
-        for (Pair<Picture, ServiceParamPictureDto> pair : pairs) {
-            Picture picture = pair.getFirst();
-            ServiceParamPictureDto pictureDto = pair.getSecond();
-            amazonService.saveMultipartFileToS3(pictureDto.getPictureFile(), picture.getStoredName());
-        }
-
-        return saveBundle.getId();
+    public Long createBundle(BundleType bundleType) {
+        Bundle createBundle = new Bundle(bundleType);
+        Bundle savedBundle = bundleRepository.save(createBundle);
+        return savedBundle.getId();
     }
 
     /**
-     * after picture에 대한 정보를 DB에 저장하고, s3에 사진 파일을 저장한다.
+     * 해당 bundle에 picture들을 모두 저장
      * @param bundleId
-     * @param afterPictures
+     * @param pictureDtoList
      */
-    public void addAfterPicturesToBundle(Long bundleId, List<ServiceParamPictureDto> afterPictures) {
-        Bundle findBundle = bundleRepository.findById(bundleId).orElseThrow(NoSuchElementException::new);
+    public void addPicturesToBundle(Long bundleId, List<ServiceParamPictureDto> pictureDtoList) {
+        Bundle findBundle = bundleRepository.findById(bundleId).orElseThrow();
 
-        //
-        List<Pair<ServiceParamPictureDto, String>> fileStoredPairList = afterPictures.stream()
-                .map(afterPicture -> new Pair<>(afterPicture, createStoredName(afterPicture.getOriginalName())))
+        //param dto 와 picture entity pair 생성
+        List<Pair<ServiceParamPictureDto, Picture>> paramPictureList = pictureDtoList.stream()
+                .map(this::ParamPictureToPicture)
                 .collect(Collectors.toList());
 
         //DB에 저장
-        List<Picture> pictureList = fileStoredPairList.stream()
-                .map(fileStoredPair -> new Picture(fileStoredPair.getFirst().getOriginalName(), fileStoredPair.getSecond(), PictureType.AFTER))
-                .collect(Collectors.toList());
-        pictureList.forEach(findBundle::addPicture);
-        findBundle.completeCreatingAfterPicture();
+        paramPictureList
+                .forEach(paramPicture -> findBundle.addPicture(paramPicture.getSecond()));
 
         //S3에 저장
-        fileStoredPairList
-                .forEach(fileStoredPair ->{
-                    amazonService.saveMultipartFileToS3(fileStoredPair.getFirst().getPictureFile(), fileStoredPair.getSecond());
-                });
+        paramPictureList
+                .forEach(paramPicture -> amazonService.saveMultipartFileToS3(paramPicture.getFirst().getPictureFile(), paramPicture.getSecond().getStoredName()));
+    }
+
+    /**
+     * 해당 번들은 AI모델을 통해 이미지 생성 완료되었다고 표시
+     * @param bundleId
+     */
+    public void isGenerateAfterPictures(Long bundleId) {
+        Bundle findBundle = bundleRepository.findById(bundleId).orElseThrow();
+        findBundle.completeGeneratingAfterPicture();
     }
 
     /**
@@ -160,6 +142,10 @@ public class BundleService {
         findBundle.changeToPublic(title);
     }
 
+    private Pair<ServiceParamPictureDto, Picture> ParamPictureToPicture(ServiceParamPictureDto pictureDto) {
+        Picture picture = new Picture(pictureDto.getOriginalName(), createStoredName(pictureDto.getOriginalName()), pictureDto.getPictureType());
+        return new Pair<>(pictureDto, picture);
+    }
 
     private String createStoredName(String originalName) {
         String uuid = UUID.randomUUID().toString();

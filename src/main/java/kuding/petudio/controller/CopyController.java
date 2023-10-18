@@ -32,16 +32,16 @@ public class CopyController {
      * 프론트에서 건네준 before pictures를 이용해 bundle 생성, before pictures를 단순히 카피해주는 기능
      *
      * @param beforePictures
-     * @param title
      * @return
-     * @throws IOException
      */
     @PostMapping("/upload")
-    public BaseDto uploadBeforePicture(@RequestParam("beforePictures") List<MultipartFile> beforePictures) throws IOException {
+    public BaseDto uploadBeforePicture(@RequestParam("beforePictures") List<MultipartFile> beforePictures){
         List<ServiceParamPictureDto> pictureDtoList = beforePictures.stream()
                 .map(beforePicture -> new ServiceParamPictureDto(beforePicture.getOriginalFilename(), beforePicture, PictureType.BEFORE))
                 .collect(Collectors.toList());
-        Long bundleId = bundleService.createBundleBindingBeforePictures(pictureDtoList, BundleType.COPY);
+        Long bundleId = bundleService.createBundle(BundleType.COPY);
+        bundleService.addPicturesToBundle(bundleId, pictureDtoList);
+
         ServiceReturnBundleDto bundleDto = bundleService.findBundleById(bundleId);
         BundleReturnDto bundle = DtoConverter.serviceReturnBundleToBundleReturn(bundleDto);
         return new BaseDto(bundle);
