@@ -39,6 +39,7 @@ public class CopyController {
         List<ServiceParamPictureDto> pictureDtoList = beforePictures.stream()
                 .map(beforePicture -> new ServiceParamPictureDto(beforePicture.getOriginalFilename(), beforePicture, PictureType.BEFORE))
                 .collect(Collectors.toList());
+
         Long bundleId = bundleService.createBundle(BundleType.COPY);
         bundleService.addPicturesToBundle(bundleId, pictureDtoList);
 
