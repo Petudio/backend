@@ -17,7 +17,7 @@ public class Bundle extends BaseTimeEntity {
     public Bundle(BundleType bundleType) {
         this.likeCount = 0;
         this.isPublic = false;
-        this.existsAfterPicture = false;
+        this.existAfterPictures = false;
         this.bundleType = bundleType;
     }
 
@@ -38,7 +38,7 @@ public class Bundle extends BaseTimeEntity {
     private boolean isPublic;
 
     @Convert(converter = BooleanToYNConverter.class)
-    private boolean existsAfterPicture;
+    private boolean existAfterPictures;
 
     private int likeCount;
 
@@ -56,7 +56,7 @@ public class Bundle extends BaseTimeEntity {
         this.title = title;
     }
 
-    public void completeGeneratingAfterPicture() {
-        this.existsAfterPicture = true;
+    public void completeGeneratingAfterPictures() {
+        this.existAfterPictures = true;
     }
 }

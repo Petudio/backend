@@ -16,7 +16,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -44,15 +43,7 @@ public class BundleService {
     @Transactional(readOnly = true)
     public ServiceReturnBundleDto findBundleById(Long bundleId) {
         Bundle bundle = bundleRepository.findById(bundleId).orElseThrow(NoSuchElementException::new);
-
-        List<Picture> pictures = bundle.getPictures();
-        List<ServiceReturnPictureDto> pictureDtoList = new ArrayList<>();
-        for (Picture picture : pictures) {
-            String pictureS3Url = amazonService.getPictureS3Url(picture.getStoredName());
-            ServiceReturnPictureDto pictureDto = new ServiceReturnPictureDto(picture.getId(), picture.getOriginalName(), picture.getStoredName(), pictureS3Url, picture.getPictureType());
-            pictureDtoList.add(pictureDto);
-        }
-        return new ServiceReturnBundleDto(bundle.getId(), pictureDtoList, bundle.getBundleType(), bundle.getLikeCount());
+        return bundleToBundleDto(bundle);
     }
 
     /**
@@ -66,20 +57,10 @@ public class BundleService {
         PageRequest pageRequest = PageRequest.of(pageOffset, pageSize, Sort.by(Sort.Direction.DESC, "createdDate"));
         Page<Bundle> bundlePage = bundleRepository.findByIsPublicTrue(pageRequest);
         List<Bundle> bundles = bundlePage.getContent();
-        log.info("bundles = {}", bundles);
-        List<ServiceReturnBundleDto> serviceReturnBundleDtoList = new ArrayList<>();
-        for (Bundle bundle : bundles) {
-            List<Picture> pictures = bundle.getPictures();
-            List<ServiceReturnPictureDto> pictureDtoList = new ArrayList<>();
-            for (Picture picture : pictures) {
-                String pictureS3Url = amazonService.getPictureS3Url(picture.getStoredName());
-                ServiceReturnPictureDto serviceReturnPictureDto = new ServiceReturnPictureDto(picture.getId(), picture.getOriginalName(), picture.getStoredName(),pictureS3Url, picture.getPictureType());
-                pictureDtoList.add(serviceReturnPictureDto);
-            }
-            ServiceReturnBundleDto serviceReturnBundleDto = new ServiceReturnBundleDto(bundle.getId(), pictureDtoList, bundle.getBundleType(), bundle.getLikeCount());
-            serviceReturnBundleDtoList.add(serviceReturnBundleDto);
-        }
-        return serviceReturnBundleDtoList;
+
+        return bundles.stream()
+                .map(this::bundleToBundleDto)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -103,7 +84,7 @@ public class BundleService {
 
         //param dto 와 picture entity pair 생성
         List<Pair<ServiceParamPictureDto, Picture>> paramPictureList = pictureDtoList.stream()
-                .map(this::ParamPictureToPicture)
+                .map(this::pictureDtoToPicture)
                 .collect(Collectors.toList());
 
         //DB에 저장
@@ -119,9 +100,9 @@ public class BundleService {
      * 해당 번들은 AI모델을 통해 이미지 생성 완료되었다고 표시
      * @param bundleId
      */
-    public void isGenerateAfterPictures(Long bundleId) {
+    public void completeGeneratingAfterPictures(Long bundleId) {
         Bundle findBundle = bundleRepository.findById(bundleId).orElseThrow();
-        findBundle.completeGeneratingAfterPicture();
+        findBundle.completeGeneratingAfterPictures();
     }
 
     /**
@@ -134,7 +115,7 @@ public class BundleService {
     }
 
     /**
-     * 해당 번들의 접근을 public으로 전환한다.
+     * 해당 번들의 접근을 public으로 전환하고 title을 추가한다.
      * @param bundleId
      */
     public void changeToPublic(Long bundleId, String title) {
@@ -142,8 +123,31 @@ public class BundleService {
         findBundle.changeToPublic(title);
     }
 
-    private Pair<ServiceParamPictureDto, Picture> ParamPictureToPicture(ServiceParamPictureDto pictureDto) {
-        Picture picture = new Picture(pictureDto.getOriginalName(), createStoredName(pictureDto.getOriginalName()), pictureDto.getPictureType());
+    private ServiceReturnBundleDto bundleToBundleDto(Bundle bundle) {
+        List<Picture> pictures = bundle.getPictures();
+
+        List<ServiceReturnPictureDto> pictureDtoList = pictures.stream()
+                .map(picture ->
+                        new ServiceReturnPictureDto(
+                                picture.getId(),
+                                picture.getOriginalName(),
+                                picture.getStoredName(),
+                                amazonService.getPictureS3Url(picture.getStoredName()),
+                                picture.getPictureType()))
+                .collect(Collectors.toList());
+
+        return new ServiceReturnBundleDto(
+                bundle.getId(),
+                pictureDtoList,
+                bundle.getBundleType(),
+                bundle.getLikeCount());
+    }
+
+    private Pair<ServiceParamPictureDto, Picture> pictureDtoToPicture(ServiceParamPictureDto pictureDto) {
+        Picture picture = new Picture(
+                pictureDto.getOriginalName(),
+                createStoredName(pictureDto.getOriginalName()),
+                pictureDto.getPictureType());
         return new Pair<>(pictureDto, picture);
     }
 

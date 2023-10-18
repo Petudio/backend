@@ -33,28 +33,11 @@ public class TestController {
     @Autowired
     private AiServerCallService aiServerCallService;
 
-
-    /**
-     * ai 생성 모델에 대한 샘플 컨트롤러
-     *
-     * @param picture1
-     * @return
-     */
-    @PostMapping("/test/process")
-    public String process(@RequestParam("picture1") MultipartFile picture1) {
-        List<ServiceParamPictureDto> pictures = new ArrayList<>();
-        ServiceParamPictureDto picture = new ServiceParamPictureDto(picture1.getOriginalFilename(), picture1, PictureType.BEFORE);
-        pictures.add(picture);
-        Long bundleId = bundleService.createBundleBindingBeforePictures(pictures, BundleType.COPY);//before picture에 대해 먼저 번들을 생성함
-        aiServerCallService.createCopyPictures(bundleId);//async함수, beforePicture를 통해 afterPicture를 생성하고 이를 위에서 이미 만들어 놓은 bundle에 저장
-        return "ok";
-    }
-
     @GetMapping("/test/changeToPublic")
     public String changeAllToPublic() {
         List<Bundle> bundles = bundleRepository.findAll();
         bundles.stream()
-                .forEach(bundle -> bundleService.changeToPublic(bundle.getId(), "copy"));
+                .forEach(bundle -> bundleService.changeToPublic(bundle.getId(), "test Title"));
         return "ok";
     }
 
