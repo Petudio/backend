@@ -56,7 +56,7 @@ public class Bundle extends BaseTimeEntity {
         this.title = title;
     }
 
-    public void completeCreatingAfterPicture() {
+    public void completeGeneratingAfterPicture() {
         this.existsAfterPicture = true;
     }
 }

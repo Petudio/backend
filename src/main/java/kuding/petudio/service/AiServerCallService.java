@@ -14,6 +14,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,15 +27,13 @@ public class AiServerCallService {
 
     private final AmazonService amazonService;
     private final BundleService bundleService;
-    private final AiServerUrl aiServerUrl;
     @Value("${petudio.ai.server.url}")
-    private String aiServerBaseUrl;
+    private String AI_SERVER_BASE_URL;
 
     @Autowired
-    public AiServerCallService(AmazonService amazonService, BundleService bundleService, AiServerUrl aiServerUrl) {
+    public AiServerCallService(AmazonService amazonService, BundleService bundleService) {
         this.amazonService = amazonService;
         this.bundleService = bundleService;
-        this.aiServerUrl = aiServerUrl;
     }
 
     public ResponseEntity<String> createCopyPictures(Long bundleId) {
@@ -60,9 +59,9 @@ public class AiServerCallService {
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
 
-        log.info("copy upload url = {}", aiServerUrl.COPY_UPLOAD);
+        log.info("copy upload url = {}", AI_SERVER_BASE_URL + "/copy/upload");
         ResponseEntity<String> responseEntity = restTemplate.exchange(
-                aiServerUrl.COPY_UPLOAD,
+                AI_SERVER_BASE_URL + "/copy/upload",
                 HttpMethod.POST,
                 requestEntity,
                 String.class
