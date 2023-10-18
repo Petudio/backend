@@ -41,7 +41,7 @@ public class FourCutsController {
 
     @PostMapping("/generate/{bundleId}")
     public BaseDto generateAiPicture(@PathVariable Long bundleId) {
-        ResponseEntity<String> responseEntity = aiServerCallService.createCopyPictures(bundleId);
+        ResponseEntity<String> responseEntity = aiServerCallService.generatePictures(bundleId);
         return new BaseDto(responseEntity.getStatusCode());
     }
 }

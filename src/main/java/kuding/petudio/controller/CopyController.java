@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,7 +49,7 @@ public class CopyController {
 
     @PostMapping("/generate/{bundleId}")
     public BaseDto generateAiPicture(@PathVariable Long bundleId) {
-        ResponseEntity<String> responseEntity = aiServerCallService.createCopyPictures(bundleId);
+        ResponseEntity<String> responseEntity = aiServerCallService.generatePictures(bundleId);
         return new BaseDto(responseEntity.getStatusCode());
     }
 }
