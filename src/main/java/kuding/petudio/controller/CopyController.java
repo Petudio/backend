@@ -50,6 +50,7 @@ public class CopyController {
     @PostMapping("/generate/{bundleId}")
     public BaseDto generateAiPicture(@PathVariable Long bundleId) {
         ResponseEntity<String> responseEntity = aiServerCallService.generatePictures(bundleId);
+        log.info("response from ai server = {}", responseEntity);
         return new BaseDto(responseEntity.getStatusCode());
     }
 }
