@@ -29,7 +29,7 @@ public class FourCutsController {
      * 업로드 된 이미지를 AI를 통해 변환 후 DB 저장 -> aiPictureService
      */
     @PostMapping("/upload")
-    public BaseDto uploadBeforePicture(@RequestParam("beforePictures") List<MultipartFile> beforePictures) {
+    public BaseDto uploadBeforePicture(@RequestPart("beforePictures") List<MultipartFile> beforePictures) {
         List<ServiceParamPictureDto> pictureDtos = new ArrayList<>();
         for (MultipartFile beforePicture : beforePictures) {
             pictureDtos.add(new ServiceParamPictureDto(beforePicture.getOriginalFilename(), beforePicture, PictureType.BEFORE));
