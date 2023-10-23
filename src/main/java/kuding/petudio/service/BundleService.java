@@ -55,9 +55,7 @@ public class BundleService {
     @Transactional(readOnly = true)
     public List<ServiceReturnBundleDto> findRecentPublicBundles(int pageOffset, int pageSize){
         PageRequest pageRequest = PageRequest.of(pageOffset, pageSize, Sort.by(Sort.Direction.DESC, "createdDate"));
-        Page<Bundle> bundlePage = bundleRepository.findByIsPublicTrue(pageRequest);
-        List<Bundle> bundles = bundlePage.getContent();
-
+        List<Bundle> bundles = bundleRepository.findByIsPublicTrue(pageRequest).getContent();
         return bundles.stream()
                 .map(this::bundleToBundleDto)
                 .collect(Collectors.toList());
