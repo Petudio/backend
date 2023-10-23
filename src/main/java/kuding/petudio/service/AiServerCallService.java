@@ -47,7 +47,7 @@ public class AiServerCallService {
     public ResponseEntity<String> generatePictures(Long bundleId) {
         Bundle bundle = bundleRepository.findById(bundleId).orElseThrow();
         List<Pair<String, byte[]>> pairListOfPictureNameAndByteArray = getPairListOfPictureNameAndByteArray(bundle);
-        return sendHttpRequestToAiServer(bundleId, pairListOfPictureNameAndByteArray, bundle.getBundleType());
+        return sendBeforePicturesToAiServer(bundleId, pairListOfPictureNameAndByteArray, bundle.getBundleType());
     }
 
 
@@ -71,7 +71,7 @@ public class AiServerCallService {
      * @param bundleType
      * @return
      */
-    private ResponseEntity<String> sendHttpRequestToAiServer(Long bundleId, List<Pair<String, byte[]>> pairListOfPictureNameAndByteArray,  BundleType bundleType) {
+    private ResponseEntity<String> sendBeforePicturesToAiServer(Long bundleId, List<Pair<String, byte[]>> pairListOfPictureNameAndByteArray, BundleType bundleType) {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
         MultiValueMap<String, Object> body = createBody(pairListOfPictureNameAndByteArray, bundleId);
