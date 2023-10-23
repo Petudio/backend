@@ -1,11 +1,14 @@
 package kuding.petudio.controller;
 
 import kuding.petudio.controller.dto.BaseDto;
+import kuding.petudio.controller.dto.BundleReturnDto;
+import kuding.petudio.controller.dto.DtoConverter;
 import kuding.petudio.domain.BundleType;
 import kuding.petudio.domain.PictureType;
 import kuding.petudio.service.AiServerCallService;
 import kuding.petudio.service.BundleService;
 import kuding.petudio.service.dto.ServiceParamPictureDto;
+import kuding.petudio.service.dto.ServiceReturnBundleDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +21,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/fourcuts")
+@RequestMapping("/api/four-cuts")
 public class FourCutsController {
 
     private final BundleService bundleService;
@@ -36,13 +39,14 @@ public class FourCutsController {
         }
         Long bundleId = bundleService.createBundle(BundleType.FOUR_AI_PICTURES);
         bundleService.addPicturesToBundle(bundleId, pictureDtos);
-        return new BaseDto(bundleId);
-    }
 
-    @PostMapping("/generate/{bundleId}")
-    public BaseDto generateAiPicture(@PathVariable Long bundleId) {
+        log.info("bundleId = ", bundleId);
         ResponseEntity<String> responseEntity = aiServerCallService.generatePictures(bundleId);
-        return new BaseDto(responseEntity.getStatusCode());
+        log.info("response from ai server = {}", responseEntity);
+
+        ServiceReturnBundleDto bundleDto = bundleService.findBundleById(bundleId);
+        BundleReturnDto bundle = DtoConverter.serviceReturnBundleToBundleReturn(bundleDto);
+        return new BaseDto(bundle);
     }
 }
 
