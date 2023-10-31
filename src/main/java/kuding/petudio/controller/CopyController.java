@@ -42,15 +42,11 @@ public class CopyController {
         Long bundleId = bundleService.createBundle(BundleType.COPY);
         bundleService.addPicturesToBundle(bundleId, pictureDtoList);
 
+        ResponseEntity<String> responseEntity = aiServerCallService.generatePictures(bundleId);
+        log.info("response from ai server = {}", responseEntity);
+
         ServiceReturnBundleDto bundleDto = bundleService.findBundleById(bundleId);
         BundleReturnDto bundle = DtoConverter.serviceReturnBundleToBundleReturn(bundleDto);
         return new BaseDto(bundle);
-    }
-
-    @PostMapping("/generate/{bundleId}")
-    public BaseDto generateAiPicture(@PathVariable Long bundleId) {
-        ResponseEntity<String> responseEntity = aiServerCallService.generatePictures(bundleId);
-        log.info("response from ai server = {}", responseEntity);
-        return new BaseDto(responseEntity.getStatusCode());
     }
 }

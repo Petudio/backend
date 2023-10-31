@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title> Bundle </title>
+</head>
+<body>
+<h1 style="color:blue"> 원본 이미지 </h1>
+<div th:each="beforePicture : ${beforePictures}">
+    <img  th:src="${beforePicture.pictureLink}"/>
+    <hr/>
+</div>
+<hr style="border: solid 10px green;">
+<hr/>
+<h1 style="color:purple"> 생성 이미지 </h1>
+<div th:each="afterPicture : ${afterPictures}">
+    <img  th:src="${afterPicture.pictureLink}"/>
+    <hr/>
+</div>
+</body>
+</html>
