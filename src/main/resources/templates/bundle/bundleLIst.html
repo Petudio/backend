@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title> Bundle List </title>
+</head>
+<body>
+
+<ul>
+    <li th:each="bundle : ${bundleList}">
+        <a  th:text="|id : ${bundle.id} / title : ${bundle.title}|" th:href="@{bundle/{bundleId} (bundleId=${bundle.id})}">링크</a>
+    </li>
+</ul>
+
+</body>
+</html>

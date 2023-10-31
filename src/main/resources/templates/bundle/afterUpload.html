@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title> 번들 아이디, 업로드 </title>
+</head>
+<body>
+<h3> 업로드 완료 </h3>
+<div th:text="|번들 아이디 = ${bundleId}|"></div>
+<a th:href="@{bundle/{bundleId} (bundleId=${bundleId})}">생성 결과</a>
+</body>
+</html>

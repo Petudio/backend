@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8"/>
+<title> 이미지 업로드 </title>
+<script th:inline="javascript">
+    const serviceList = [{name : "four-cuts", url : "/th/four-cuts"},
+                        {name : "copy", url : "/th/copy"}];
+    var uploadForm;
+
+    window.onload = () => {
+        uploadForm = document.getElementById("uploadForm");
+        let ops = document.getElementById("selectService").options;
+        serviceList.forEach(service=>{
+            let op = new Option();
+            op.value = service.name;
+            op.text = service.name;
+            ops.add(op);
+        });
+        uploadForm.setAttribute("action", serviceList[0].url);
+//         selectbox는 기본적으로 첫번재 인자를 선택하게 되므로
+    };
+
+    changeService = (e) => {
+        let selectedServiceName = e.value;
+        let selectedService = serviceList.find(service => {
+            if(service.name == selectedServiceName) return true;
+            else return false;
+        })
+        let selectedServiceUrl = selectedService.url;
+        uploadForm.setAttribute("action", selectedServiceUrl);
+    };
+</script>
+</head>
+<body>
+    <h1> 이미지 업로드 </h1>
+    <hr/>
+    <select name="selectService" id="selectService" onChange="changeService(this)">
+    </select>
+    <br/>
+    <form name="uploadForm" id="uploadForm" method="post" enctype="multipart/form-data">
+        <input type="file" multiple="multiple" name="beforePictures"/>
+        <input type="submit"/>
+    </form>
+</body>
+</html>

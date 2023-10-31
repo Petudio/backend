@@ -28,7 +28,7 @@ public class Bundle extends BaseTimeEntity {
 
     private String title;
 
-    @OneToMany(mappedBy = "bundle", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "bundle", cascade = CascadeType.PERSIST)
     private List<Picture> pictures = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
