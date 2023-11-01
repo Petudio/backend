@@ -67,6 +67,6 @@ public class ThController {
     public String getAllBundle(Model model) {
         List<Bundle> bundles = bundleRepository.findAll();
         model.addAttribute("bundleList", bundles);
-        return "bundle/bundleList";
+        return "bundle/list";
     }
 }
