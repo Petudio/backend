@@ -5,13 +5,13 @@ import kuding.petudio.controller.dto.BundleReturnDto;
 import kuding.petudio.controller.dto.DtoConverter;
 import kuding.petudio.domain.BundleType;
 import kuding.petudio.domain.PictureType;
-import kuding.petudio.service.AiServerCallService;
+import kuding.petudio.etc.callback.CheckedExceptionConverterTemplate;
 import kuding.petudio.service.BundleService;
+import kuding.petudio.service.ColabServerCallService;
 import kuding.petudio.service.dto.ServiceParamPictureDto;
 import kuding.petudio.service.dto.ServiceReturnBundleDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,7 +25,8 @@ import java.util.List;
 public class FourCutsController {
 
     private final BundleService bundleService;
-    private final AiServerCallService aiServerCallService;
+    private final ColabServerCallService colabServerCallService;
+    private final CheckedExceptionConverterTemplate template = new CheckedExceptionConverterTemplate();
 
     /**
      * AI 생성 전 Before 이미지 업로드
@@ -35,17 +36,26 @@ public class FourCutsController {
     public BaseDto uploadBeforePicture(@RequestPart("beforePictures") List<MultipartFile> beforePictures) {
         List<ServiceParamPictureDto> pictureDtos = new ArrayList<>();
         for (MultipartFile beforePicture : beforePictures) {
-            pictureDtos.add(new ServiceParamPictureDto(beforePicture.getOriginalFilename(), beforePicture, PictureType.BEFORE));
+            pictureDtos.add(new ServiceParamPictureDto(beforePicture.getOriginalFilename(), template.execute(beforePicture::getBytes) ,PictureType.BEFORE));
         }
         Long bundleId = bundleService.createBundle(BundleType.FOUR_AI_PICTURES);
         bundleService.addPicturesToBundle(bundleId, pictureDtos);
 
-        log.info("bundleId = ", bundleId);
-        ResponseEntity<String> responseEntity = aiServerCallService.generatePictures(bundleId);
-        log.info("response from ai server = {}", responseEntity);
-
         ServiceReturnBundleDto bundleDto = bundleService.findBundleById(bundleId);
         BundleReturnDto bundle = DtoConverter.serviceReturnBundleToBundleReturn(bundleDto);
+        return new BaseDto(bundle);
+    }
+
+    @GetMapping("/generate")
+    public BaseDto generateAfterPictures(Long bundleId, String prompt) {
+        //TODO 제거
+        bundleService.completeTraining(bundleId);
+
+        if (!bundleService.isTrainingComplete(bundleId)) {
+            return new BaseDto("Training is not yet complete");
+        }
+        colabServerCallService.generateAfterPicture(bundleId, prompt);
+        ServiceReturnBundleDto bundle = bundleService.findBundleById(bundleId);
         return new BaseDto(bundle);
     }
 }

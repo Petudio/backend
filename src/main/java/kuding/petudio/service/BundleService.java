@@ -10,7 +10,6 @@ import kuding.petudio.service.dto.ServiceReturnPictureDto;
 import kuding.petudio.etc.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -91,25 +90,16 @@ public class BundleService {
 
         //S3에 저장
         paramPictureList
-                .forEach(paramPicture -> amazonService.saveMultipartFileToS3(paramPicture.getFirst().getPictureFile(), paramPicture.getSecond().getStoredName()));
+                .forEach(paramPicture -> amazonService.saveByteArrayToS3(paramPicture.getFirst().getPictureFileByteArray() ,paramPicture.getSecond().getStoredName()));
     }
 
-    /**
-     * 해당 번들은 AI모델을 통해 이미지 생성 완료되었다고 표시
-     * @param bundleId
-     */
-    public void completeGeneratingAfterPictures(Long bundleId) {
-        Bundle findBundle = bundleRepository.findById(bundleId).orElseThrow();
-        findBundle.completeGeneratingAfterPictures();
+    public boolean isTrainingComplete(Long bundleId) {
+        return bundleRepository.findById(bundleId).orElseThrow().isTrainingComplete();
     }
 
-    /**
-     * 해당 번들의 좋아요를 하나 증가시킨다.
-     * @param bundleId
-     */
-    public void addLikeCount(Long bundleId) {
-        Bundle bundle = bundleRepository.findById(bundleId).orElseThrow(NoSuchElementException::new);
-        bundle.addLikeCount();
+    public void completeTraining(Long bundleId) {
+        Bundle bundle = bundleRepository.findById(bundleId).orElseThrow();
+        bundle.completeTraining();
     }
 
     /**
@@ -119,6 +109,11 @@ public class BundleService {
     public void changeToPublic(Long bundleId, String title) {
         Bundle findBundle = bundleRepository.findById(bundleId).orElseThrow(NoSuchElementException::new);
         findBundle.changeToPublic(title);
+    }
+
+    public void addLikeCount(Long bundleId) {
+        Bundle bundle = bundleRepository.findById(bundleId).orElseThrow();
+        bundle.addLikeCount();
     }
 
     private ServiceReturnBundleDto bundleToBundleDto(Bundle bundle) {

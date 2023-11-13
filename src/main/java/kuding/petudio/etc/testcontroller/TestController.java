@@ -1,12 +1,8 @@
 package kuding.petudio.etc.testcontroller;
 
 import kuding.petudio.domain.Bundle;
-import kuding.petudio.domain.BundleType;
-import kuding.petudio.domain.PictureType;
 import kuding.petudio.repository.BundleRepository;
 import kuding.petudio.service.BundleService;
-import kuding.petudio.service.AiServerCallService;
-import kuding.petudio.service.dto.ServiceParamPictureDto;
 import kuding.petudio.service.dto.ServiceReturnBundleDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +15,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -30,8 +25,6 @@ public class TestController {
     private BundleService bundleService;
     @Autowired
     private BundleRepository bundleRepository;
-    @Autowired
-    private AiServerCallService aiServerCallService;
 
     @GetMapping("/test/changeToPublic")
     public String changeAllToPublic() {

@@ -7,12 +7,12 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 public class ServiceParamPictureDto {
     private String originalName;
-    private MultipartFile pictureFile;
+    private byte[] pictureFileByteArray;
     private PictureType pictureType;
 
-    public ServiceParamPictureDto(String originalName, MultipartFile pictureFile, PictureType pictureType) {
+    public ServiceParamPictureDto(String originalName, byte[] pictureFileByteArray, PictureType pictureType) {
         this.originalName = originalName;
-        this.pictureFile = pictureFile;
+        this.pictureFileByteArray = pictureFileByteArray;
         this.pictureType = pictureType;
     }
 }
