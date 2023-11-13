@@ -10,12 +10,14 @@ public class ServiceReturnPictureDto {
     private String storedName;
     private String pictureS3Url;
     private PictureType pictureType;
+    private int section;
 
-    public ServiceReturnPictureDto(Long id, String originalName, String storedName, String pictureS3Url, PictureType pictureType) {
+    public ServiceReturnPictureDto(Long id, String originalName, String storedName, String pictureS3Url, PictureType pictureType, int section) {
         this.id = id;
         this.originalName = originalName;
         this.storedName = storedName;
         this.pictureS3Url = pictureS3Url;
         this.pictureType = pictureType;
+        this.section = section;
     }
 }

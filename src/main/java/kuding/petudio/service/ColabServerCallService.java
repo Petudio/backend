@@ -29,7 +29,7 @@ public class ColabServerCallService {
     private final BundleRepository bundleRepository;
     private final CheckedExceptionConverterTemplate exceptionConvertTemplate = new CheckedExceptionConverterTemplate();
 
-    private String COLAB_SERVER_BASE_URL = "https://e1ca-104-196-183-146.ngrok-free.app";
+    private String COLAB_SERVER_BASE_URL = "https://0f2f-104-196-183-146.ngrok-free.app";
 
     /**
      * 해당 번들의 before Pictures를 가지고 ai server에 image generating 요청
