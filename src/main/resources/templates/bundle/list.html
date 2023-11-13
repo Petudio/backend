@@ -7,7 +7,7 @@
 
 <ul>
     <li th:each="bundle : ${bundleList}">
-        <a  th:text="|id : ${bundle.id} / title : ${bundle.title}|" th:href="@{/th/bundle/{bundleId} (bundleId=${bundle.id})}">링크</a>
+        <a  th:text="|id : ${bundle.id} / title : ${bundle.title} / createdDate : ${bundle.createdDate} / randomName : ${bundle.randomName}|" th:href="@{/th/bundle/{bundleId} (bundleId=${bundle.id})}">링크</a>
     </li>
 </ul>
 

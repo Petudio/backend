@@ -18,7 +18,6 @@ public class Bundle extends BaseTimeEntity {
     public Bundle(BundleType bundleType) {
         this.likeCount = 0;
         this.isPublic = false;
-        this.isTrainingComplete = false;
         this.bundleType = bundleType;
         this.randomName = UUID.randomUUID().toString();
     }
@@ -38,8 +37,6 @@ public class Bundle extends BaseTimeEntity {
     private BundleType bundleType;
     @Convert(converter = BooleanToYNConverter.class)
     private boolean isPublic;
-    @Convert(converter = BooleanToYNConverter.class)
-    private boolean isTrainingComplete;
     private String randomName;
     private String title;
     private int likeCount;
@@ -63,11 +60,7 @@ public class Bundle extends BaseTimeEntity {
         this.title = title;
     }
 
-    public void completeTraining() {
-        this.isTrainingComplete = true;
-    }
-
-    public boolean isTrainingComplete() {
-        return isTrainingComplete;
+    public void changeRandomName(String randomName) {
+        this.randomName = randomName;
     }
 }

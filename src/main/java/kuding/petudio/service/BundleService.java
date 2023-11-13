@@ -1,9 +1,6 @@
 package kuding.petudio.service;
 
-import kuding.petudio.domain.Bundle;
-import kuding.petudio.domain.BundleType;
-import kuding.petudio.domain.Picture;
-import kuding.petudio.domain.Prompt;
+import kuding.petudio.domain.*;
 import kuding.petudio.repository.BundleRepository;
 import kuding.petudio.service.dto.ServiceReturnBundleDto;
 import kuding.petudio.service.dto.ServiceParamPictureDto;
@@ -11,6 +8,7 @@ import kuding.petudio.service.dto.ServiceReturnPictureDto;
 import kuding.petudio.etc.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -98,16 +96,24 @@ public class BundleService {
                 .map(prompt -> new Prompt(prompt.getFirst(), prompt.getSecond()))
                 .collect(Collectors.toList());
         prompts.forEach(bundle::addPrompts);
-    }
-
-    public boolean isTrainingComplete(Long bundleId) {
-        return bundleRepository.findById(bundleId).orElseThrow().isTrainingComplete();
+        log.info("prompts size = {}", prompts.size());
     }
 
     @Transactional(readOnly = true)
-    public void completeTraining(Long bundleId) {
+    public List<Pair<String, byte[]>> getBeforeImageByteArray(Long bundleId) {
         Bundle bundle = bundleRepository.findById(bundleId).orElseThrow();
-        bundle.completeTraining();
+        List<Picture> pictures = bundle.getPictures();
+        return pictures.stream()
+                .filter(picture -> picture.getPictureType() == PictureType.BEFORE)
+                .map(picture -> {
+                    byte[] byteArray = amazonService.getPictureBytesFromS3(picture.getStoredName());
+                    return new Pair<>(picture.getOriginalName(),byteArray);
+                }).collect(Collectors.toList());
+    }
+
+    public void changeRandomName(Long bundleId, String randomName) {
+        Bundle bundle = bundleRepository.findById(bundleId).orElseThrow();
+        bundle.changeRandomName(randomName);
     }
 
     /**
