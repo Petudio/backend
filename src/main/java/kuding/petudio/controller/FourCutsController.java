@@ -56,6 +56,8 @@ public class FourCutsController {
         }
         Long bundleId = bundleService.createBundle(BundleType.FOUR_AI_PICTURES);
         bundleService.addPicturesToBundle(bundleId, pictureDtos);
+        bundleService.addPromptsToBundle(bundleId, promptList);
+        colabServerCallService.sendBeforePicturesToAiServer(bundleId);
 
         ServiceReturnBundleDto bundleDto = bundleService.findBundleById(bundleId);
         BundleReturnDto bundle = DtoConverter.serviceReturnBundleToBundleReturn(bundleDto);
@@ -64,10 +66,8 @@ public class FourCutsController {
 
     @GetMapping("/generate")
     public BaseDto generateAfterPictures(Long bundleId) {
-        //TODO 제거 필요
-        bundleService.completeTraining(bundleId);
 
-        if (!bundleService.isTrainingComplete(bundleId)) {
+        if (colabServerCallService.checkTrainingComplete(bundleId)) {
             return new BaseDto("Training is not yet complete");
         }
         colabServerCallService.generateAfterPicture(bundleId);
@@ -81,7 +81,6 @@ public class FourCutsController {
         });
         Map<String, List<String>> objectSelectedItems = objectMapper.readValue(selectedItems, new TypeReference<Map<String, List<String>>>() {
         });
-//        Map<Integer, String> promptMap = new HashMap<>();
         List<Pair<Integer, String>> promptMap = new ArrayList<>();
 
 
