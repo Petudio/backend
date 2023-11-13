@@ -34,13 +34,13 @@ public class ThController {
         return "bundle/uploadForm";
     }
 
-    @PostMapping("/four-cuts")
-    public String createBundle(@RequestParam List<MultipartFile> beforePictures, RedirectAttributes redirectAttributes) {
-        BaseDto baseDto = fourCutsController.uploadBeforePicture(beforePictures);
-        BundleReturnDto bundle = (BundleReturnDto) baseDto.getData();
-        redirectAttributes.addAttribute("bundleId", bundle.getBundleId());
-        return "redirect:/th/after-upload";
-    }
+//    @PostMapping("/four-cuts")
+//    public String createBundle(@RequestParam List<MultipartFile> beforePictures, RedirectAttributes redirectAttributes) {
+//        BaseDto baseDto = fourCutsController.uploadBeforePicture(beforePictures);
+//        BundleReturnDto bundle = (BundleReturnDto) baseDto.getData();
+//        redirectAttributes.addAttribute("bundleId", bundle.getBundleId());
+//        return "redirect:/th/after-upload";
+//    }
 
     @GetMapping("/after-upload")
     public String afterUpload(@RequestParam Long bundleId, Model model) {

@@ -1,10 +1,14 @@
 package kuding.petudio.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import kuding.petudio.controller.dto.BaseDto;
 import kuding.petudio.controller.dto.BundleReturnDto;
 import kuding.petudio.controller.dto.DtoConverter;
 import kuding.petudio.domain.BundleType;
 import kuding.petudio.domain.PictureType;
+import kuding.petudio.etc.Pair;
 import kuding.petudio.etc.callback.CheckedExceptionConverterTemplate;
 import kuding.petudio.service.BundleService;
 import kuding.petudio.service.ColabServerCallService;
@@ -16,7 +20,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -33,7 +39,17 @@ public class FourCutsController {
      * 업로드 된 이미지를 AI를 통해 변환 후 DB 저장 -> aiPictureService
      */
     @PostMapping("/upload")
-    public BaseDto uploadBeforePicture(@RequestPart("beforePictures") List<MultipartFile> beforePictures) {
+    public BaseDto uploadBeforePicture(@RequestPart("beforePictures") List<MultipartFile> beforePictures,
+                                       @RequestParam("selectedItems") String selectedItems,
+                                       @RequestParam("selectedBackground") String selectedBackground
+                                       ) throws JsonProcessingException {
+
+        System.out.println("selectedItems = " + selectedItems);
+        System.out.println("selectedBackground = " + selectedBackground);
+
+        List<Pair<Integer, String>> promptList = makePrompt(selectedItems, selectedBackground);
+        System.out.println("promptList = " + promptList);
+
         List<ServiceParamPictureDto> pictureDtos = new ArrayList<>();
         for (MultipartFile beforePicture : beforePictures) {
             pictureDtos.add(new ServiceParamPictureDto(beforePicture.getOriginalFilename(), template.execute(beforePicture::getBytes) ,PictureType.BEFORE));
@@ -58,5 +74,30 @@ public class FourCutsController {
         ServiceReturnBundleDto bundle = bundleService.findBundleById(bundleId);
         return new BaseDto(bundle);
     }
+
+    private List<Pair<Integer, String>> makePrompt(String selectedItems, String selectedBackground) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, String> objectSelectedBackground = objectMapper.readValue(selectedBackground, new TypeReference<Map<String, String>>() {
+        });
+        Map<String, List<String>> objectSelectedItems = objectMapper.readValue(selectedItems, new TypeReference<Map<String, List<String>>>() {
+        });
+//        Map<Integer, String> promptMap = new HashMap<>();
+        List<Pair<Integer, String>> promptMap = new ArrayList<>();
+
+
+        for (int idx = 1; idx < 5; idx++) {
+            String backgrounds = objectSelectedBackground.get("구역 " + String.valueOf(idx));
+            List<String> items = objectSelectedItems.get("구역 " + String.valueOf(idx));
+            String p = backgrounds+",";
+            for (String item : items) {
+                p += item;
+            }
+            System.out.println("p = " + p);
+            promptMap.add(new Pair<>(Integer.valueOf(idx),p));
+        }
+        return promptMap;
+    }
 }
+
+
 
