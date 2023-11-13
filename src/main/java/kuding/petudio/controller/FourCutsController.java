@@ -56,6 +56,7 @@ public class FourCutsController {
         }
         Long bundleId = bundleService.createBundle(BundleType.FOUR_AI_PICTURES);
         bundleService.addPicturesToBundle(bundleId, pictureDtos);
+        bundleService.addPromptsToBundle(bundleId, promptList);
 
         ServiceReturnBundleDto bundleDto = bundleService.findBundleById(bundleId);
         BundleReturnDto bundle = DtoConverter.serviceReturnBundleToBundleReturn(bundleDto);

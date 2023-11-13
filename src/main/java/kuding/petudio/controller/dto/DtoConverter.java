@@ -31,7 +31,8 @@ public class DtoConverter {
                 serviceReturnPictureDto.getId(),
                 serviceReturnPictureDto.getOriginalName(),
                 serviceReturnPictureDto.getPictureS3Url(),
-                serviceReturnPictureDto.getPictureType()
+                serviceReturnPictureDto.getPictureType(),
+                serviceReturnPictureDto.getSection()
         );
     }
 
