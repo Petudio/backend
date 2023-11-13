@@ -140,7 +140,8 @@ public class BundleService {
                                 picture.getOriginalName(),
                                 picture.getStoredName(),
                                 amazonService.getPictureS3Url(picture.getStoredName()),
-                                picture.getPictureType()))
+                                picture.getPictureType(),
+                                picture.getSection()))
                 .collect(Collectors.toList());
 
         return new ServiceReturnBundleDto(
