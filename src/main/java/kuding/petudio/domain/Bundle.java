@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity(name = "bundle")
 @Getter
@@ -17,8 +18,9 @@ public class Bundle extends BaseTimeEntity {
     public Bundle(BundleType bundleType) {
         this.likeCount = 0;
         this.isPublic = false;
-        this.existAfterPictures = false;
+        this.isTrainingComplete = false;
         this.bundleType = bundleType;
+        this.randomName = UUID.randomUUID().toString();
     }
 
     @Id
@@ -38,7 +40,9 @@ public class Bundle extends BaseTimeEntity {
     private boolean isPublic;
 
     @Convert(converter = BooleanToYNConverter.class)
-    private boolean existAfterPictures;
+    private boolean isTrainingComplete;
+
+    private String randomName;
 
     private int likeCount;
 
@@ -56,7 +60,11 @@ public class Bundle extends BaseTimeEntity {
         this.title = title;
     }
 
-    public void completeGeneratingAfterPictures() {
-        this.existAfterPictures = true;
+    public void completeTraining() {
+        this.isTrainingComplete = true;
+    }
+
+    public boolean isTrainingComplete() {
+        return isTrainingComplete;
     }
 }
