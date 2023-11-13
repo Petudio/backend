@@ -3,6 +3,7 @@ package kuding.petudio.service;
 import kuding.petudio.domain.Bundle;
 import kuding.petudio.domain.BundleType;
 import kuding.petudio.domain.Picture;
+import kuding.petudio.domain.Prompt;
 import kuding.petudio.repository.BundleRepository;
 import kuding.petudio.service.dto.ServiceReturnBundleDto;
 import kuding.petudio.service.dto.ServiceParamPictureDto;
@@ -15,9 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -90,13 +89,22 @@ public class BundleService {
 
         //S3에 저장
         paramPictureList
-                .forEach(paramPicture -> amazonService.saveByteArrayToS3(paramPicture.getFirst().getPictureFileByteArray() ,paramPicture.getSecond().getStoredName()));
+                .forEach(paramPicture -> amazonService.saveByteArrayToS3(paramPicture.getFirst().getPictureFileByteArray(), paramPicture.getSecond().getStoredName()));
+    }
+
+    public void addPromptsToBundle(Long bundleId, List<Pair<Integer, String>> paramPrompts) {
+        Bundle bundle = bundleRepository.findById(bundleId).orElseThrow();
+        List<Prompt> prompts = paramPrompts.stream()
+                .map(prompt -> new Prompt(prompt.getFirst(), prompt.getSecond()))
+                .collect(Collectors.toList());
+        prompts.forEach(bundle::addPrompts);
     }
 
     public boolean isTrainingComplete(Long bundleId) {
         return bundleRepository.findById(bundleId).orElseThrow().isTrainingComplete();
     }
 
+    @Transactional(readOnly = true)
     public void completeTraining(Long bundleId) {
         Bundle bundle = bundleRepository.findById(bundleId).orElseThrow();
         bundle.completeTraining();
@@ -140,7 +148,8 @@ public class BundleService {
         Picture picture = new Picture(
                 pictureDto.getOriginalName(),
                 createStoredName(pictureDto.getOriginalName()),
-                pictureDto.getPictureType());
+                pictureDto.getPictureType(),
+                pictureDto.getSection());
         return new Pair<>(pictureDto, picture);
     }
 

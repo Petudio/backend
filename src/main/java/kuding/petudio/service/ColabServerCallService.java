@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kuding.petudio.domain.Bundle;
 import kuding.petudio.domain.PictureType;
+import kuding.petudio.domain.Prompt;
 import kuding.petudio.etc.callback.CheckedExceptionConverterTemplate;
 import kuding.petudio.repository.BundleRepository;
 import kuding.petudio.service.dto.ColabServerResponseDto;
@@ -35,17 +36,19 @@ public class ColabServerCallService {
      * @param bundleId
      * @return
      */
-    @Transactional(readOnly = true)
-    public void generateAfterPicture(Long bundleId, String prompt) {
+    @Transactional
+    public void generateAfterPicture(Long bundleId) {
         Bundle bundle = bundleRepository.findById(bundleId).orElseThrow();
-        List<ColabServerResponseDto> colabServerResponseDtoList = getAfterPicture(bundle.getRandomName(), prompt);
-        List<ServiceParamPictureDto> paramDtoList = colabServerResponseDtoList.stream()
-                .map(response -> new ServiceParamPictureDto(response.getFilename(), Base64.decode(response.getEncodedImage()), PictureType.AFTER))
-                .collect(Collectors.toList());
+        List<Prompt> prompts = bundle.getPrompts();
+        List<ServiceParamPictureDto> paramDtoList = prompts.stream()
+                .map(prompt -> {
+                    ColabServerResponseDto response = getAfterPicture(bundle.getRandomName(), prompt.getContent());
+                    return new ServiceParamPictureDto(response.getFilename(), Base64.decode(response.getEncodedImage()), PictureType.AFTER, prompt.getSection());
+                }).collect(Collectors.toList());
         bundleService.addPicturesToBundle(bundleId, paramDtoList);
     }
 
-    public List<ColabServerResponseDto> getAfterPicture(String randomName, String prompt) {
+    private ColabServerResponseDto getAfterPicture(String randomName, String prompt) {
         String url = UriComponentsBuilder.fromUriString(COLAB_SERVER_BASE_URL + "/generate")
                 .queryParam("randomName", randomName)
                 .queryParam("prompt", prompt)
@@ -55,8 +58,7 @@ public class ColabServerCallService {
         RestTemplate template = new RestTemplate();
         ResponseEntity<String> responseEntity = template.getForEntity(url, String.class);
         ObjectMapper objectMapper = new ObjectMapper();
-        List<ColabServerResponseDto> colabServerResponseDtoList = exceptionConvertTemplate.execute(() -> objectMapper.readValue(responseEntity.getBody(), new TypeReference<List<ColabServerResponseDto>>() {}));
-        return colabServerResponseDtoList;
+        return exceptionConvertTemplate.execute(() -> objectMapper.readValue(responseEntity.getBody(), new TypeReference<ColabServerResponseDto>() {}));
     }
 
 }
