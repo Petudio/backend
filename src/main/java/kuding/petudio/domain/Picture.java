@@ -11,10 +11,11 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Picture extends BaseTimeEntity {
 
-    public Picture(String originalName, String storedName, PictureType pictureType) {
+    public Picture(String originalName, String storedName, PictureType pictureType, int section) {
         this.originalName = originalName;
         this.storedName = storedName;
         this.pictureType = pictureType;
+        this.section = section;
     }
 
     @Id
@@ -31,6 +32,7 @@ public class Picture extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     private PictureType pictureType;
+    private int section;
 
     public void setBundle(Bundle bundle) {
         this.bundle = bundle;

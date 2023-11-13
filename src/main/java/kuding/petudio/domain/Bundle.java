@@ -28,27 +28,30 @@ public class Bundle extends BaseTimeEntity {
     @Column(name = "bundle_id")
     private Long id;
 
-    private String title;
-
     @OneToMany(mappedBy = "bundle", cascade = CascadeType.PERSIST)
     private List<Picture> pictures = new ArrayList<>();
 
+    @OneToMany(mappedBy = "bundle", cascade = CascadeType.PERSIST)
+    private List<Prompt> prompts = new ArrayList<>();
+
     @Enumerated(EnumType.STRING)
     private BundleType bundleType;
-
     @Convert(converter = BooleanToYNConverter.class)
     private boolean isPublic;
-
     @Convert(converter = BooleanToYNConverter.class)
     private boolean isTrainingComplete;
-
     private String randomName;
-
+    private String title;
     private int likeCount;
 
     public void addPicture(Picture picture) {
         pictures.add(picture);
         picture.setBundle(this);
+    }
+
+    public void addPrompts(Prompt prompt) {
+        this.prompts.add(prompt);
+        prompt.setBundle(this);
     }
 
     public void addLikeCount() {

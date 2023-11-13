@@ -36,7 +36,7 @@ public class FourCutsController {
     public BaseDto uploadBeforePicture(@RequestPart("beforePictures") List<MultipartFile> beforePictures) {
         List<ServiceParamPictureDto> pictureDtos = new ArrayList<>();
         for (MultipartFile beforePicture : beforePictures) {
-            pictureDtos.add(new ServiceParamPictureDto(beforePicture.getOriginalFilename(), template.execute(beforePicture::getBytes) ,PictureType.BEFORE));
+            pictureDtos.add(new ServiceParamPictureDto(beforePicture.getOriginalFilename(), template.execute(beforePicture::getBytes) ,PictureType.BEFORE, -1));
         }
         Long bundleId = bundleService.createBundle(BundleType.FOUR_AI_PICTURES);
         bundleService.addPicturesToBundle(bundleId, pictureDtos);
@@ -47,14 +47,14 @@ public class FourCutsController {
     }
 
     @GetMapping("/generate")
-    public BaseDto generateAfterPictures(Long bundleId, String prompt) {
-        //TODO 제거
+    public BaseDto generateAfterPictures(Long bundleId) {
+        //TODO 제거 필요
         bundleService.completeTraining(bundleId);
 
         if (!bundleService.isTrainingComplete(bundleId)) {
             return new BaseDto("Training is not yet complete");
         }
-        colabServerCallService.generateAfterPicture(bundleId, prompt);
+        colabServerCallService.generateAfterPicture(bundleId);
         ServiceReturnBundleDto bundle = bundleService.findBundleById(bundleId);
         return new BaseDto(bundle);
     }

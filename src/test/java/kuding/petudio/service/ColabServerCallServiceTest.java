@@ -7,11 +7,11 @@ import java.util.List;
 
 class ColabServerCallServiceTest {
 
-    ColabServerCallService colabServerCallService = new ColabServerCallService(null, null);
-
-    @Test
-    void getJson() {
-        List<ColabServerResponseDto> afterPictrues = colabServerCallService.getAfterPicture("yes", "yes");
-        System.out.println(afterPictrues);
-    }
+//    ColabServerCallService colabServerCallService = new ColabServerCallService(null, null);
+//
+//    @Test
+//    void getJson() {
+//        List<ColabServerResponseDto> afterPictrues = colabServerCallService.getAfterPicture("yes", "yes");
+//        System.out.println(afterPictrues);
+//    }
 }
