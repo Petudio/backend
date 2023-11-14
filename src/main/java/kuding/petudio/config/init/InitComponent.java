@@ -1,19 +1,14 @@
 package kuding.petudio.config.init;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import kuding.petudio.domain.type.AnimalType;
 import kuding.petudio.domain.type.BundleType;
-import kuding.petudio.etc.Pair;
 import kuding.petudio.repository.BundleRepository;
 import kuding.petudio.service.BundleService;
 import kuding.petudio.service.PromptService;
-import kuding.petudio.service.dto.ServiceReturnBundleDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor

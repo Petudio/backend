@@ -1,8 +1,6 @@
 package kuding.petudio.domain;
 
-import kuding.petudio.controller.Prompt;
 import kuding.petudio.domain.converter.BooleanToYNConverter;
-import kuding.petudio.domain.type.AnimalType;
 import kuding.petudio.domain.type.BundleType;
 import lombok.AccessLevel;
 import lombok.Getter;

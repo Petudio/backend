@@ -3,7 +3,6 @@ package kuding.petudio.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kuding.petudio.domain.type.AnimalType;
 import kuding.petudio.etc.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -35,7 +34,7 @@ public class PromptService {
             if(koreaBackground.equals("랜덤")){
                 int i = (int)(Math.random() * randomPrompt.size());
                 StringBuilder sb = new StringBuilder();
-                sb.append(randomPrompt.get(i).getFirst()).append(randomName).append(randomPrompt.get(i).getSecond());
+                sb.append(randomPrompt.get(i).getFirst()).append(randomName).append(" ").append(animalType).append(randomPrompt.get(i).getSecond());
                 String prompt = sb.toString();
                 promptList.add(new Pair<>(idx, prompt));
             }else{

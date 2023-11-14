@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import kuding.petudio.controller.dto.BaseDto;
 import kuding.petudio.controller.dto.BundleReturnDto;
 import kuding.petudio.controller.dto.DtoConverter;
-import kuding.petudio.domain.type.AnimalType;
 import kuding.petudio.domain.type.BundleType;
 import kuding.petudio.domain.type.PictureType;
 import kuding.petudio.etc.Pair;
