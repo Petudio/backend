@@ -1,8 +1,6 @@
 package kuding.petudio.service;
 
-import kuding.petudio.controller.Prompt;
 import kuding.petudio.domain.*;
-import kuding.petudio.domain.type.AnimalType;
 import kuding.petudio.domain.type.BundleType;
 import kuding.petudio.domain.type.PictureType;
 import kuding.petudio.repository.BundleRepository;

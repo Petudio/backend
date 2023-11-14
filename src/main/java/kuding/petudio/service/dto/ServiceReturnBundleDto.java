@@ -1,6 +1,5 @@
 package kuding.petudio.service.dto;
 
-import kuding.petudio.domain.type.AnimalType;
 import kuding.petudio.domain.type.BundleType;
 import lombok.Getter;
 
@@ -15,7 +14,6 @@ public class ServiceReturnBundleDto {
     private List<ServiceReturnPictureDto> pictures;
     private BundleType bundleType;
     private String randomName;
-    private AnimalType animalType;
     private int likeCount;
 
     public ServiceReturnBundleDto(Long id, List<ServiceReturnPictureDto> pictures, BundleType bundleType, int likeCount, String randomName) {
