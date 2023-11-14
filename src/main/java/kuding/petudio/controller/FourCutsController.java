@@ -73,7 +73,7 @@ public class FourCutsController {
         List<Pair<Integer, String>> prompts = promptService.makePrompt(selectedItems, selectedBackground, bundle.getRandomName(), convertAnimalType);
         List<ServiceParamPictureDto> dtoList = IntStream.range(0, prompts.size()).mapToObj(idx -> {
             String prompt = prompts.get(0).getSecond();
-            return colabServerCallService.generateAfterPicture(bundleId, prompt, idx);
+            return colabServerCallService.generateAfterPicture(bundleId, prompt, idx + 1);
         }).collect(Collectors.toList());
         bundleService.addPicturesToBundle(bundleId, dtoList);
         bundle = bundleService.findBundleById(bundleId);
