@@ -1,9 +1,8 @@
 package kuding.petudio.service.dto;
 
-import kuding.petudio.domain.BundleType;
+import kuding.petudio.domain.type.BundleType;
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

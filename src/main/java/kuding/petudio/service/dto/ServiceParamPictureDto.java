@@ -1,8 +1,7 @@
 package kuding.petudio.service.dto;
 
-import kuding.petudio.domain.PictureType;
+import kuding.petudio.domain.type.PictureType;
 import lombok.Getter;
-import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 public class ServiceParamPictureDto {

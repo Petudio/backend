@@ -1,6 +1,6 @@
 package kuding.petudio.controller.dto;
 
-import kuding.petudio.domain.PictureType;
+import kuding.petudio.domain.type.PictureType;
 import lombok.Getter;
 
 @Getter

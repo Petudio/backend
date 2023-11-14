@@ -1,4 +1,4 @@
-package kuding.petudio.domain;
+package kuding.petudio.domain.type;
 
 /**
  * AI 모델중에서 어떠한 AI 모델을 사용했는지 기록
