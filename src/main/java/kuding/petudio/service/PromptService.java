@@ -66,7 +66,7 @@ public class PromptService {
         promptConverter.put("모자", "hat");
         promptConverter.put("선글라스", "sun glass");
         promptConverter.put("수영", "swimming pool");
-        promptConverter.put("우주", "galaxy");
+        promptConverter.put("우주", "space, galaxy");
         promptConverter.put("꽃밭", "flower garden");
         promptConverter.put("피라미드", "pyramid");
         promptConverter.put("동화", "fairy tale");
@@ -89,7 +89,7 @@ public class PromptService {
         randomPrompt.add(new Pair<>("photo of a ", "   lazily stretching on a sunny windowsill, with houseplants around and a view of a serene garden outside, elegant, luxury, clean, smooth,  beautiful, highly detailed, sharp focus, studio photography,  realistic, natural light, octane render, adobe lightroom, rule of thirds, symmetrical balance, depth layering, polarizing filter, sense of depth, ai enhanced"));
         randomPrompt.add(new Pair<>("photo of a ", "  leaping through the air, trying to catch a fluttering butterfly in a sunny flower garden, elegant, luxury, clean, smooth,  beautiful, highly detailed, sharp focus, studio photography,  realistic, natural light, octane render, adobe lightroom, rule of thirds, symmetrical balance, depth layering, polarizing filter, sense of depth, ai enhanced"));
 
-        createRandomPrompt("photo of a "," hiding in the leaves,(bright screen:1.1),pastel_colors,soft light,natsuki yuu \\(amemizu\\),eyes_focus,depth of field,smile,kind_smile,, (((masterpiece))),(((best quality))),((ultra-detailed))");
+        createRandomPrompt("photo of a ", " hiding in the leaves,(bright screen:1.1),pastel_colors,soft light,natsuki yuu \\(amemizu\\),eyes_focus,depth of field,smile,kind_smile,, (((masterpiece))),(((best quality))),((ultra-detailed))");
         createRandomPrompt("photo of a ", " in a superhero cape, pretending to fly with a backdrop of a city skyline, complete with tall buildings and a setting sun, elegant, luxury, clean, smooth,  beautiful, highly detailed, sharp focus, studio photography,  realistic, natural light, octane render, adobe lightroom, rule of thirds, symmetrical balance, depth layering, polarizing filter, sense of depth, ai enhanced");
         createRandomPrompt("photo of a ", " dressed as a chef, standing in a toy kitchen, with miniature cooking pots and a pretend cake, elegant, luxury, clean, smooth,  beautiful, highly detailed, sharp focus, studio photography,  realistic, natural light, octane render, adobe lightroom, rule of thirds, symmetrical balance, depth layering, polarizing filter, sense of depth, ai enhanced");
         createRandomPrompt("photo of a ", " leaping to catch a brightly colored ball in mid-air at a sunny park, with a background of blooming flowers and tall trees, elegant, luxury, clean, smooth,  beautiful, highly detailed, sharp focus, studio photography,  realistic, natural light, octane render, adobe lightroom, rule of thirds, symmetrical balance, depth layering, polarizing filter, sense of depth, ai enhanced");
