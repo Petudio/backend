@@ -14,7 +14,9 @@ import kuding.petudio.service.dto.ColabServerResponseDto;
 import kuding.petudio.service.dto.ServiceParamPictureDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,9 +39,12 @@ public class ColabServerCallService {
     private final BundleRepository bundleRepository;
     private final CheckedExceptionConverterTemplate exceptionConvertTemplate = new CheckedExceptionConverterTemplate();
     private final AmazonService amazonService;
+    @Autowired
+    private Environment environment;
 
     @Value("${ColabServerUrl}")
     private String COLAB_SERVER_BASE_URL;
+
 
     @Transactional(readOnly = true)
     public void sendBeforePicturesToAiServer(Long bundleId) {
