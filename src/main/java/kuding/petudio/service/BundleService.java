@@ -1,5 +1,6 @@
 package kuding.petudio.service;
 
+import kuding.petudio.controller.Prompt;
 import kuding.petudio.domain.*;
 import kuding.petudio.domain.type.AnimalType;
 import kuding.petudio.domain.type.BundleType;
@@ -64,8 +65,8 @@ public class BundleService {
      * @param bundleType
      * @return
      */
-    public Long createBundle(BundleType bundleType, AnimalType animalType) {
-        Bundle createBundle = new Bundle(bundleType, animalType);
+    public Long createBundle(BundleType bundleType) {
+        Bundle createBundle = new Bundle(bundleType);
         Bundle savedBundle = bundleRepository.save(createBundle);
         return savedBundle.getId();
     }
@@ -90,15 +91,6 @@ public class BundleService {
         //S3에 저장
         paramPictureList
                 .forEach(paramPicture -> amazonService.saveByteArrayToS3(paramPicture.getFirst().getPictureFileByteArray(), paramPicture.getSecond().getStoredName()));
-    }
-
-    public void addPromptsToBundle(Long bundleId, List<Pair<Integer, String>> paramPrompts) {
-        Bundle bundle = bundleRepository.findById(bundleId).orElseThrow();
-        List<Prompt> prompts = paramPrompts.stream()
-                .map(prompt -> new Prompt(prompt.getFirst(), prompt.getSecond()))
-                .collect(Collectors.toList());
-        prompts.forEach(bundle::addPrompts);
-        log.info("prompts size = {}", prompts.size());
     }
 
     @Transactional(readOnly = true)
@@ -151,8 +143,7 @@ public class BundleService {
                 pictureDtoList,
                 bundle.getBundleType(),
                 bundle.getLikeCount(),
-                bundle.getRandomName(),
-                bundle.getAnimalType()
+                bundle.getRandomName()
         );
     }
 

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kuding.petudio.domain.Bundle;
 import kuding.petudio.domain.Picture;
 import kuding.petudio.domain.type.PictureType;
-import kuding.petudio.domain.Prompt;
+import kuding.petudio.controller.Prompt;
 import kuding.petudio.etc.Pair;
 import kuding.petudio.etc.callback.CheckedExceptionConverterTemplate;
 import kuding.petudio.repository.BundleRepository;
@@ -47,15 +47,10 @@ public class ColabServerCallService {
         restTemplateToAiServer(bundle.getRandomName(), pairList);
     }
 
-    public void generateAfterPicture(Long bundleId) {
+    public ServiceParamPictureDto generateAfterPicture(Long bundleId, String prompt, int section) {
         Bundle bundle = bundleRepository.findById(bundleId).orElseThrow();
-        List<Prompt> prompts = bundle.getPrompts();
-        List<ServiceParamPictureDto> paramDtoList = prompts.stream()
-                .map(prompt -> {
-                    ColabServerResponseDto response = getAfterPicture(bundle.getRandomName(), prompt.getContent());
-                    return new ServiceParamPictureDto(response.getFilename(), Base64.decode(response.getEncodedImage()), PictureType.AFTER, prompt.getSection());
-                }).collect(Collectors.toList());
-        bundleService.addPicturesToBundle(bundleId, paramDtoList);
+        ColabServerResponseDto response = getAfterPicture(bundle.getRandomName(), prompt);
+        return new ServiceParamPictureDto(response.getFilename(), Base64.decode(response.getEncodedImage()), PictureType.AFTER, section);
     }
 
     @Transactional(readOnly = true)

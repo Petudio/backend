@@ -1,5 +1,6 @@
 package kuding.petudio.domain;
 
+import kuding.petudio.controller.Prompt;
 import kuding.petudio.domain.converter.BooleanToYNConverter;
 import kuding.petudio.domain.type.AnimalType;
 import kuding.petudio.domain.type.BundleType;
@@ -17,12 +18,11 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Bundle extends BaseTimeEntity {
 
-    public Bundle(BundleType bundleType, AnimalType animalType) {
+    public Bundle(BundleType bundleType) {
         this.likeCount = 0;
         this.isPublic = false;
         this.bundleType = bundleType;
         this.randomName = UUID.randomUUID().toString();
-        this.animalType = animalType;
     }
 
     @Id
@@ -33,9 +33,6 @@ public class Bundle extends BaseTimeEntity {
     @OneToMany(mappedBy = "bundle", cascade = CascadeType.PERSIST)
     private List<Picture> pictures = new ArrayList<>();
 
-    @OneToMany(mappedBy = "bundle", cascade = CascadeType.PERSIST)
-    private List<Prompt> prompts = new ArrayList<>();
-
     @Enumerated(EnumType.STRING)
     private BundleType bundleType;
     @Convert(converter = BooleanToYNConverter.class)
@@ -44,17 +41,10 @@ public class Bundle extends BaseTimeEntity {
     private String randomName;
     private String title;
     private int likeCount;
-    @Enumerated(EnumType.STRING)
-    private AnimalType animalType;
 
     public void addPicture(Picture picture) {
         pictures.add(picture);
         picture.setBundle(this);
-    }
-
-    public void addPrompts(Prompt prompt) {
-        this.prompts.add(prompt);
-        prompt.setBundle(this);
     }
 
     public void addLikeCount() {
