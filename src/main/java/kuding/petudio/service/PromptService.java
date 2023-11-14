@@ -30,7 +30,7 @@ public class PromptService {
         promptConverter.put("동화", "fairy tale");
     }
 
-    public List<Pair<Integer, String>> makePrompt(String selectedItems, String selectedBackground, String randomName, AnimalType animalType) throws JsonProcessingException {
+    public List<Pair<Integer, String>> makePrompt(String selectedItems, String selectedBackground, String randomName, String animalType) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, String> objectSelectedBackground = objectMapper.readValue(selectedBackground, new TypeReference<Map<String, String>>() {
         });
@@ -44,7 +44,7 @@ public class PromptService {
             List<String> koreItems = objectSelectedItems.get("구역 " + String.valueOf(idx));
 
             StringBuilder sb = new StringBuilder();
-            sb.append("photo of a ").append(randomName).append(" ").append(animalType.toString());
+            sb.append("photo of a ").append(randomName).append(" ").append(animalType);
 
             if (koreItems.size() != 0) {
                 sb.append(" with ");

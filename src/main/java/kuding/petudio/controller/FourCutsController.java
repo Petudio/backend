@@ -1,12 +1,9 @@
 package kuding.petudio.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import kuding.petudio.controller.dto.BaseDto;
 import kuding.petudio.controller.dto.BundleReturnDto;
 import kuding.petudio.controller.dto.DtoConverter;
-import kuding.petudio.domain.converter.AnimalTypeConverter;
 import kuding.petudio.domain.type.AnimalType;
 import kuding.petudio.domain.type.BundleType;
 import kuding.petudio.domain.type.PictureType;
@@ -22,11 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -67,10 +61,9 @@ public class FourCutsController {
         if (!colabServerCallService.checkTrainingComplete(bundleId)) {
             return new BaseDto("Training is not yet complete");
         }
-        AnimalType convertAnimalType = AnimalTypeConverter.StringToAnimalType(animalType);
         ServiceReturnBundleDto bundle = bundleService.findBundleById(bundleId);
         //prompt는 4개씩만 넘어옴
-        List<Pair<Integer, String>> prompts = promptService.makePrompt(selectedItems, selectedBackground, bundle.getRandomName(), convertAnimalType);
+        List<Pair<Integer, String>> prompts = promptService.makePrompt(selectedItems, selectedBackground, bundle.getRandomName(), animalType);
         List<ServiceParamPictureDto> dtoList = IntStream.range(0, prompts.size()).mapToObj(idx -> {
             String prompt = prompts.get(idx).getSecond();
             return colabServerCallService.generateAfterPicture(bundleId, prompt, idx + 1);
