@@ -82,8 +82,7 @@ public class ColabServerCallService {
         RestTemplate template = new RestTemplate();
         ResponseEntity<String> responseEntity = template.getForEntity(url, String.class);
         ObjectMapper objectMapper = new ObjectMapper();
-        ColabServerResponseDto response = exceptionConvertTemplate.execute(() -> objectMapper.readValue(responseEntity.getBody(), new TypeReference<ColabServerResponseDto>() {}));
-        return response;
+        return exceptionConvertTemplate.execute(() -> objectMapper.readValue(responseEntity.getBody(), new TypeReference<ColabServerResponseDto>() {}));
     }
 
     private List<Pair<String, byte[]>> getPairListOfPictureNameAndByteArray(Bundle bundle) {
