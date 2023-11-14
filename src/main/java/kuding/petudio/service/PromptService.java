@@ -38,7 +38,6 @@ public class PromptService {
         });
         List<Pair<Integer, String>> promptMap = new ArrayList<>();
 
-
         for (int idx = 1; idx < 5; idx++) {
             String koreaBackground = objectSelectedBackground.get("구역 " + String.valueOf(idx));
             List<String> koreItems = objectSelectedItems.get("구역 " + String.valueOf(idx));
