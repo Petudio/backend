@@ -1,5 +1,6 @@
 package kuding.petudio.service.dto;
 
+import kuding.petudio.domain.type.AnimalType;
 import kuding.petudio.domain.type.BundleType;
 import lombok.Getter;
 
@@ -13,13 +14,17 @@ public class ServiceReturnBundleDto {
     private Long id;
     private List<ServiceReturnPictureDto> pictures;
     private BundleType bundleType;
+    private String randomName;
+    private AnimalType animalType;
     private int likeCount;
 
-    public ServiceReturnBundleDto(Long id, List<ServiceReturnPictureDto> pictures, BundleType bundleType, int likeCount) {
+    public ServiceReturnBundleDto(Long id, List<ServiceReturnPictureDto> pictures, BundleType bundleType, int likeCount, String randomName, AnimalType animalType) {
         this.pictures = pictures;
         this.id = id;
         this.bundleType = bundleType;
         this.likeCount = likeCount;
+        this.randomName = randomName;
+        this.animalType = animalType;
     }
 
 }
