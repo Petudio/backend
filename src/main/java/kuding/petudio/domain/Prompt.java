@@ -20,6 +20,7 @@ public class Prompt extends BaseTimeEntity {
     public Long id;
 
     private int section;
+    @Column(length = 1000)
     private String content;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bundle_id")
