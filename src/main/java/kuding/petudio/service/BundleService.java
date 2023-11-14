@@ -150,7 +150,10 @@ public class BundleService {
                 bundle.getId(),
                 pictureDtoList,
                 bundle.getBundleType(),
-                bundle.getLikeCount());
+                bundle.getLikeCount(),
+                bundle.getRandomName(),
+                bundle.getAnimalType()
+        );
     }
 
     private Pair<ServiceParamPictureDto, Picture> pictureDtoToPicture(ServiceParamPictureDto pictureDto) {
