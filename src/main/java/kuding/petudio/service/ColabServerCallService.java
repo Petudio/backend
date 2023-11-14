@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kuding.petudio.domain.Bundle;
 import kuding.petudio.domain.Picture;
-import kuding.petudio.domain.PictureType;
+import kuding.petudio.domain.type.PictureType;
 import kuding.petudio.domain.Prompt;
 import kuding.petudio.etc.Pair;
 import kuding.petudio.etc.callback.CheckedExceptionConverterTemplate;

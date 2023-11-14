@@ -6,8 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kuding.petudio.controller.dto.BaseDto;
 import kuding.petudio.controller.dto.BundleReturnDto;
 import kuding.petudio.controller.dto.DtoConverter;
-import kuding.petudio.domain.BundleType;
-import kuding.petudio.domain.PictureType;
+import kuding.petudio.domain.type.AnimalType;
+import kuding.petudio.domain.type.BundleType;
+import kuding.petudio.domain.type.PictureType;
 import kuding.petudio.etc.Pair;
 import kuding.petudio.etc.callback.CheckedExceptionConverterTemplate;
 import kuding.petudio.service.BundleService;
@@ -20,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +41,8 @@ public class FourCutsController {
     @PostMapping("/upload")
     public BaseDto uploadBeforePicture(@RequestPart("beforePictures") List<MultipartFile> beforePictures,
                                        @RequestParam("selectedItems") String selectedItems,
-                                       @RequestParam("selectedBackground") String selectedBackground
+                                       @RequestParam("selectedBackground") String selectedBackground,
+                                       @RequestParam("animalType") AnimalType animalType
                                        ) throws JsonProcessingException {
 
         System.out.println("selectedItems = " + selectedItems);
@@ -54,7 +55,7 @@ public class FourCutsController {
         for (MultipartFile beforePicture : beforePictures) {
             pictureDtos.add(new ServiceParamPictureDto(beforePicture.getOriginalFilename(), template.execute(beforePicture::getBytes) ,PictureType.BEFORE, -1));
         }
-        Long bundleId = bundleService.createBundle(BundleType.FOUR_AI_PICTURES);
+        Long bundleId = bundleService.createBundle(BundleType.FOUR_AI_PICTURES, animalType);
         bundleService.addPicturesToBundle(bundleId, pictureDtos);
         bundleService.addPromptsToBundle(bundleId, promptList);
         colabServerCallService.sendBeforePicturesToAiServer(bundleId);

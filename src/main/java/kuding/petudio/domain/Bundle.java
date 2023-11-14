@@ -1,6 +1,8 @@
 package kuding.petudio.domain;
 
 import kuding.petudio.domain.converter.BooleanToYNConverter;
+import kuding.petudio.domain.type.AnimalType;
+import kuding.petudio.domain.type.BundleType;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,11 +17,12 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Bundle extends BaseTimeEntity {
 
-    public Bundle(BundleType bundleType) {
+    public Bundle(BundleType bundleType, AnimalType animalType) {
         this.likeCount = 0;
         this.isPublic = false;
         this.bundleType = bundleType;
         this.randomName = UUID.randomUUID().toString();
+        this.animalType = animalType;
     }
 
     @Id
@@ -41,6 +44,8 @@ public class Bundle extends BaseTimeEntity {
     private String randomName;
     private String title;
     private int likeCount;
+    @Enumerated(EnumType.STRING)
+    private AnimalType animalType;
 
     public void addPicture(Picture picture) {
         pictures.add(picture);

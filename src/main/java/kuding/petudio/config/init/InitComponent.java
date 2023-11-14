@@ -1,17 +1,14 @@
 package kuding.petudio.config.init;
 
-import kuding.petudio.domain.BundleType;
-import kuding.petudio.domain.Prompt;
+import kuding.petudio.domain.type.AnimalType;
+import kuding.petudio.domain.type.BundleType;
 import kuding.petudio.etc.Pair;
 import kuding.petudio.repository.BundleRepository;
 import kuding.petudio.service.BundleService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,14 +29,14 @@ public class InitComponent {
 
         String randomName1 = "KU_DOG";
         if(bundleRepository.findByRandomName(randomName1).isEmpty()){
-            Long bundleId = bundleService.createBundle(BundleType.FOUR_AI_PICTURES);
+            Long bundleId = bundleService.createBundle(BundleType.FOUR_AI_PICTURES, AnimalType.dog);
             bundleService.changeRandomName(bundleId, randomName1);
             bundleService.addPromptsToBundle(bundleId, promptList);
         }
 
         String randomName2 = "KU_CAT";
         if(bundleRepository.findByRandomName(randomName2).isEmpty()){
-            Long bundleId2 = bundleService.createBundle(BundleType.FOUR_AI_PICTURES);
+            Long bundleId2 = bundleService.createBundle(BundleType.FOUR_AI_PICTURES, AnimalType.cat);
             bundleService.changeRandomName(bundleId2, randomName2);
             bundleService.addPromptsToBundle(bundleId2, promptList);
         }

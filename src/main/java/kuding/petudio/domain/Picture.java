@@ -1,5 +1,6 @@
 package kuding.petudio.domain;
 
+import kuding.petudio.domain.type.PictureType;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

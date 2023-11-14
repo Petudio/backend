@@ -1,6 +1,9 @@
 package kuding.petudio.service;
 
 import kuding.petudio.domain.*;
+import kuding.petudio.domain.type.AnimalType;
+import kuding.petudio.domain.type.BundleType;
+import kuding.petudio.domain.type.PictureType;
 import kuding.petudio.repository.BundleRepository;
 import kuding.petudio.service.dto.ServiceReturnBundleDto;
 import kuding.petudio.service.dto.ServiceParamPictureDto;
@@ -8,7 +11,6 @@ import kuding.petudio.service.dto.ServiceReturnPictureDto;
 import kuding.petudio.etc.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -62,8 +64,8 @@ public class BundleService {
      * @param bundleType
      * @return
      */
-    public Long createBundle(BundleType bundleType) {
-        Bundle createBundle = new Bundle(bundleType);
+    public Long createBundle(BundleType bundleType, AnimalType animalType) {
+        Bundle createBundle = new Bundle(bundleType, animalType);
         Bundle savedBundle = bundleRepository.save(createBundle);
         return savedBundle.getId();
     }
