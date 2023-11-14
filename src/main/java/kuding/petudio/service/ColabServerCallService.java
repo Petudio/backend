@@ -14,6 +14,7 @@ import kuding.petudio.service.dto.ColabServerResponseDto;
 import kuding.petudio.service.dto.ServiceParamPictureDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,8 @@ public class ColabServerCallService {
     private final CheckedExceptionConverterTemplate exceptionConvertTemplate = new CheckedExceptionConverterTemplate();
     private final AmazonService amazonService;
 
-    private String COLAB_SERVER_BASE_URL = "https://18e0-34-90-20-242.ngrok-free.app";
+    @Value("${ColabServerUrl}")
+    private String COLAB_SERVER_BASE_URL;
 
     @Transactional(readOnly = true)
     public void sendBeforePicturesToAiServer(Long bundleId) {
@@ -66,7 +68,7 @@ public class ColabServerCallService {
                 .toString();
         RestTemplate restTemplate = new RestTemplate();
         String bool = restTemplate.getForEntity(url, String.class).getBody();
-        return !bool.equals("True");
+        return bool.equals("True");
     }
 
     private ColabServerResponseDto getAfterPicture(String randomName, String prompt) {

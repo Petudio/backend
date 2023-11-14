@@ -37,6 +37,7 @@ public class Bundle extends BaseTimeEntity {
     private BundleType bundleType;
     @Convert(converter = BooleanToYNConverter.class)
     private boolean isPublic;
+    @Column(unique = true)
     private String randomName;
     private String title;
     private int likeCount;

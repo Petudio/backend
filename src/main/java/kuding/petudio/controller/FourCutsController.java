@@ -67,7 +67,7 @@ public class FourCutsController {
     @GetMapping("/generate")
     public BaseDto generateAfterPictures(Long bundleId) {
 
-        if (colabServerCallService.checkTrainingComplete(bundleId)) {
+        if (!colabServerCallService.checkTrainingComplete(bundleId)) {
             return new BaseDto("Training is not yet complete");
         }
         colabServerCallService.generateAfterPicture(bundleId);
