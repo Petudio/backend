@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kuding.petudio.controller.dto.BaseDto;
 import kuding.petudio.controller.dto.BundleReturnDto;
 import kuding.petudio.controller.dto.DtoConverter;
+import kuding.petudio.domain.converter.AnimalTypeConverter;
 import kuding.petudio.domain.type.AnimalType;
 import kuding.petudio.domain.type.BundleType;
 import kuding.petudio.domain.type.PictureType;
@@ -46,17 +47,21 @@ public class FourCutsController {
     public BaseDto uploadBeforePicture(@RequestPart("beforePictures") List<MultipartFile> beforePictures,
                                        @RequestParam("selectedItems") String selectedItems,
                                        @RequestParam("selectedBackground") String selectedBackground,
-                                       @RequestParam("animalType") AnimalType animalType
+                                       @RequestParam("animalType") String animalType
                                        ) throws JsonProcessingException {
 
         System.out.println("selectedItems = " + selectedItems);
         System.out.println("selectedBackground = " + selectedBackground);
+        System.out.println("animalType = " + animalType);
+
+        AnimalType convertAnimalType = AnimalTypeConverter.StringToAnimalType(animalType);
+        System.out.println("convertAnimalType = " + convertAnimalType);
 
         List<ServiceParamPictureDto> pictureDtos = new ArrayList<>();
         for (MultipartFile beforePicture : beforePictures) {
             pictureDtos.add(new ServiceParamPictureDto(beforePicture.getOriginalFilename(), template.execute(beforePicture::getBytes) ,PictureType.BEFORE, -1));
         }
-        Long bundleId = bundleService.createBundle(BundleType.FOUR_AI_PICTURES, animalType);
+        Long bundleId = bundleService.createBundle(BundleType.FOUR_AI_PICTURES, convertAnimalType);
         ServiceReturnBundleDto bundleDto = bundleService.findBundleById(bundleId);
         List<Pair<Integer, String>> promptList = promptService.makePrompt(selectedItems, selectedBackground, bundleDto.getRandomName(), bundleDto.getAnimalType());
 
