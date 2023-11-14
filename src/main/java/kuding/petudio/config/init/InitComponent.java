@@ -26,8 +26,8 @@ public class InitComponent {
 
     @PostConstruct
     public void initKuBundle() throws JsonProcessingException {
-        String selectedBackgrounds = "{\"구역 1\":[\"모자\",\"선글라스\"],\"구역 2\":[\"모자\"],\"구역 3\":[\"선글라스\"],\"구역 4\":[]}";
-        String selectedItems = "{\"구역 1\":\"피라미드\",\"구역 2\":\"꽃밭\",\"구역 3\":\"수영\",\"구역 4\":\"우주\"}";
+        String selectedItems = "{\"구역 1\":[\"모자\",\"선글라스\"],\"구역 2\":[\"모자\"],\"구역 3\":[\"선글라스\"],\"구역 4\":[]}";
+        String selectedBackgrounds = "{\"구역 1\":\"피라미드\",\"구역 2\":\"꽃밭\",\"구역 3\":\"수영\",\"구역 4\":\"우주\"}";
 
 
         String randomName1 = "KU_DOG";

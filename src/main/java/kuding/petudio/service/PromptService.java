@@ -43,11 +43,19 @@ public class PromptService {
             List<String> koreItems = objectSelectedItems.get("구역 " + String.valueOf(idx));
 
             StringBuilder sb = new StringBuilder();
-            sb.append("photo of a ").append(randomName).append(" ").append(animalType.toString()).append(" on the background of the ").append(promptConverter.get(koreaBackground));
-            koreItems.forEach(koreaItem -> {
-                String item = promptConverter.get(koreaItem);
-                sb.append(",").append(koreaItem).append(" ");
-            });
+            sb.append("photo of a ").append(randomName).append(" ").append(animalType.toString());
+            if(promptConverter.get(koreaBackground) != null){
+                sb.append(" on the background of the ").append(promptConverter.get(koreaBackground));
+            }else{
+            }
+
+            if (koreItems.size() != 0) {
+                sb.append(" with ");
+                koreItems.forEach(koreaItem -> {
+                    String item = promptConverter.get(koreaItem);
+                    sb.append(item).append(",");
+                });
+            }
             String prompt = sb.toString();
             log.info("prompt");
             promptMap.add(new Pair<>(Integer.valueOf(idx), prompt));
