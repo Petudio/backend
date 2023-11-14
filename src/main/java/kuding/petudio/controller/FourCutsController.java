@@ -58,22 +58,20 @@ public class FourCutsController {
                                          @RequestParam("selectedItems") String selectedItems,
                                          @RequestParam("selectedBackground") String selectedBackground,
                                          @RequestParam("animalType") String animalType) throws JsonProcessingException {
-//        if (!colabServerCallService.checkTrainingComplete(bundleId)) {
-//            return new BaseDto("Training is not yet complete");
-//        }
+        if (!colabServerCallService.checkTrainingComplete(bundleId)) {
+            return new BaseDto("Training is not yet complete");
+        }
         ServiceReturnBundleDto bundle = bundleService.findBundleById(bundleId);
         //prompt는 4개씩만 넘어옴
         List<Pair<Integer, String>> prompts = promptService.makePrompt(selectedItems, selectedBackground, bundle.getRandomName(), animalType);
         List<ServiceParamPictureDto> dtoList = IntStream.range(0, prompts.size()).mapToObj(idx -> {
             String prompt = prompts.get(idx).getSecond();
             log.info("prompt = {}", prompt);
-            return new ServiceParamPictureDto("a", null, null, -1);
-//            return colabServerCallService.generateAfterPicture(bundleId, prompt, idx + 1);
+            return colabServerCallService.generateAfterPicture(bundleId, prompt, idx + 1);
         }).collect(Collectors.toList());
-        return null;
-//        bundleService.addPicturesToBundle(bundleId, dtoList);
-//        bundle = bundleService.findBundleById(bundleId);
-//        return new BaseDto(bundle);
+        bundleService.addPicturesToBundle(bundleId, dtoList);
+        bundle = bundleService.findBundleById(bundleId);
+        return new BaseDto(bundle);
     }
 
 
