@@ -25,7 +25,8 @@ public class PromptService {
         promptConverter.put("선글라스", "sun glass");
         promptConverter.put("수영", "swimming pool");
         promptConverter.put("우주", "galaxy");
-        promptConverter.put("꽃밭", "pyramid");
+        promptConverter.put("꽃밭", "flower garden");
+        promptConverter.put("피라미드", "pyramid");
         promptConverter.put("동화", "fairy tale");
     }
 
@@ -57,7 +58,7 @@ public class PromptService {
             }else{
                 sb.append(" elegant, luxury, clean, smooth, elegant, beautiful, highly detailed, sharp focus, studio photography,realistic, natural light, octane render, adobe lightroom, rule of thirds, symmetrical balance, depth layering, polarizing filter, sense of depth, ai enhanced ");
             }
-            
+
             String prompt = sb.toString();
             promptMap.add(new Pair<>(Integer.valueOf(idx), prompt));
         }

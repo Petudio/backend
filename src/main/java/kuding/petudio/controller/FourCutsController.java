@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Slf4j
 @RestController
@@ -44,44 +46,37 @@ public class FourCutsController {
      * 업로드 된 이미지를 AI를 통해 변환 후 DB 저장 -> aiPictureService
      */
     @PostMapping("/upload")
-    public BaseDto uploadBeforePicture(@RequestPart("beforePictures") List<MultipartFile> beforePictures,
-                                       @RequestParam("selectedItems") String selectedItems,
-                                       @RequestParam("selectedBackground") String selectedBackground,
-                                       @RequestParam("animalType") String animalType
-                                       ) throws JsonProcessingException {
-
-        System.out.println("selectedItems = " + selectedItems);
-        System.out.println("selectedBackground = " + selectedBackground);
-        System.out.println("animalType = " + animalType);
-
-        AnimalType convertAnimalType = AnimalTypeConverter.StringToAnimalType(animalType);
-        System.out.println("convertAnimalType = " + convertAnimalType);
-
+    public BaseDto uploadBeforePicture(@RequestPart("beforePictures") List<MultipartFile> beforePictures)  {
         List<ServiceParamPictureDto> pictureDtos = new ArrayList<>();
         for (MultipartFile beforePicture : beforePictures) {
             pictureDtos.add(new ServiceParamPictureDto(beforePicture.getOriginalFilename(), template.execute(beforePicture::getBytes) ,PictureType.BEFORE, -1));
         }
-        Long bundleId = bundleService.createBundle(BundleType.FOUR_AI_PICTURES, convertAnimalType);
-        ServiceReturnBundleDto bundleDto = bundleService.findBundleById(bundleId);
-        List<Pair<Integer, String>> promptList = promptService.makePrompt(selectedItems, selectedBackground, bundleDto.getRandomName(), bundleDto.getAnimalType());
-
-        bundleService.addPicturesToBundle(bundleId, pictureDtos);
-        bundleService.addPromptsToBundle(bundleId, promptList);
+        Long bundleId = bundleService.createBundle(BundleType.FOUR_AI_PICTURES);
         colabServerCallService.sendBeforePicturesToAiServer(bundleId);
-
-
+        bundleService.addPicturesToBundle(bundleId, pictureDtos);
+        ServiceReturnBundleDto bundleDto = bundleService.findBundleById(bundleId);
         BundleReturnDto bundle = DtoConverter.serviceReturnBundleToBundleReturn(bundleDto);
         return new BaseDto(bundle);
     }
 
-    @GetMapping("/generate")
-    public BaseDto generateAfterPictures(Long bundleId) {
-
+    @PostMapping("/generate")
+    public BaseDto generateAfterPictures(Long bundleId,
+                                         @RequestParam("selectedItems") String selectedItems,
+                                         @RequestParam("selectedBackground") String selectedBackground,
+                                         @RequestParam("animalType") String animalType) throws JsonProcessingException {
         if (!colabServerCallService.checkTrainingComplete(bundleId)) {
             return new BaseDto("Training is not yet complete");
         }
-        colabServerCallService.generateAfterPicture(bundleId);
+        AnimalType convertAnimalType = AnimalTypeConverter.StringToAnimalType(animalType);
         ServiceReturnBundleDto bundle = bundleService.findBundleById(bundleId);
+        //prompt는 4개씩만 넘어옴
+        List<Pair<Integer, String>> prompts = promptService.makePrompt(selectedItems, selectedBackground, bundle.getRandomName(), convertAnimalType);
+        List<ServiceParamPictureDto> dtoList = IntStream.range(0, prompts.size()).mapToObj(idx -> {
+            String prompt = prompts.get(0).getSecond();
+            return colabServerCallService.generateAfterPicture(bundleId, prompt, idx);
+        }).collect(Collectors.toList());
+        bundleService.addPicturesToBundle(bundleId, dtoList);
+        bundle = bundleService.findBundleById(bundleId);
         return new BaseDto(bundle);
     }
 

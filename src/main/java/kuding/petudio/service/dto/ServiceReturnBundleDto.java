@@ -18,13 +18,12 @@ public class ServiceReturnBundleDto {
     private AnimalType animalType;
     private int likeCount;
 
-    public ServiceReturnBundleDto(Long id, List<ServiceReturnPictureDto> pictures, BundleType bundleType, int likeCount, String randomName, AnimalType animalType) {
+    public ServiceReturnBundleDto(Long id, List<ServiceReturnPictureDto> pictures, BundleType bundleType, int likeCount, String randomName) {
         this.pictures = pictures;
         this.id = id;
         this.bundleType = bundleType;
         this.likeCount = likeCount;
         this.randomName = randomName;
-        this.animalType = animalType;
     }
 
 }
