@@ -44,10 +44,6 @@ public class PromptService {
 
             StringBuilder sb = new StringBuilder();
             sb.append("photo of a ").append(randomName).append(" ").append(animalType.toString());
-            if(promptConverter.get(koreaBackground) != null){
-                sb.append(" on the background of the ").append(promptConverter.get(koreaBackground));
-            }else{
-            }
 
             if (koreItems.size() != 0) {
                 sb.append(" with ");
@@ -56,8 +52,13 @@ public class PromptService {
                     sb.append(item).append(",");
                 });
             }
+            if(promptConverter.get(koreaBackground) != null){
+                sb.append(" on the background of the ").append(promptConverter.get(koreaBackground));
+            }else{
+                sb.append(" elegant, luxury, clean, smooth, elegant, beautiful, highly detailed, sharp focus, studio photography,realistic, natural light, octane render, adobe lightroom, rule of thirds, symmetrical balance, depth layering, polarizing filter, sense of depth, ai enhanced ");
+            }
+            
             String prompt = sb.toString();
-            log.info("prompt");
             promptMap.add(new Pair<>(Integer.valueOf(idx), prompt));
         }
         return promptMap;
