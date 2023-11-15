@@ -21,13 +21,13 @@ public class InitComponent {
 
     @PostConstruct
     public void initKuBundle() throws JsonProcessingException {
-        String randomName1 = "KU_DOG";
+        String randomName1 = "KU";
         if(bundleRepository.findByRandomName(randomName1).isEmpty()){
             Long bundleId = bundleService.createBundle(BundleType.FOUR_AI_PICTURES);
             bundleService.changeRandomName(bundleId, randomName1);
         }
 
-        String randomName2 = "KU_CAT";
+        String randomName2 = "KU1";
         if(bundleRepository.findByRandomName(randomName2).isEmpty()){
             Long bundleId2 = bundleService.createBundle(BundleType.FOUR_AI_PICTURES);
             bundleService.changeRandomName(bundleId2, randomName2);

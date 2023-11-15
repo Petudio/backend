@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -20,6 +21,13 @@ public class PromptService {
     List<Pair<String, String>> randomPrompt = new ArrayList<>();
 
     public List<Pair<Integer, String>> makePrompt(String selectedItems, String selectedBackground, String randomName, String animalType) throws JsonProcessingException {
+        animalType = animalType.toUpperCase(Locale.ROOT);
+
+        //KU1에 대한 놈만 예외처리
+        if (randomName.equals("KU1")) {
+            randomName = "KU";
+        }
+
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, String> objectSelectedBackground = objectMapper.readValue(selectedBackground, new TypeReference<Map<String, String>>() {
         });
