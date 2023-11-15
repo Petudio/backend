@@ -75,7 +75,7 @@ public class PromptService {
     @PostConstruct
     public void randomPromptInit() {
         randomPrompt.add(new Pair<>("photo of a ", " fireman, extinguishes fire, sausages, sausage, hyper-detailed, hyper-realism, sharp frame, cinematic, (background action-packed), lit"));
-        randomPrompt.add(new Pair<>("abstract expressionist painting of an award-winning photo of a ", " hyperrealistic <lora:xl_more_art-full_v1:0.7> <lora:zhibi-sdxl:1> zhibi, energetic brushwork, bold colors, abstract forms, expressive, emotional"));
+//        randomPrompt.add(new Pair<>("abstract expressionist painting of an award-winning photo of a ", " hyperrealistic <lora:xl_more_art-full_v1:0.7> <lora:zhibi-sdxl:1> zhibi, energetic brushwork, bold colors, abstract forms, expressive, emotional"));
         randomPrompt.add(new Pair<>("Astral Aura, an award-winning photo of a ", ", hyperrealistic <lora:xl_more_art-full_v1:0.5>, astral, colorful aura, vibrant energy"));
         randomPrompt.add(new Pair<>("photo of a ", " athletes, sausage race, olympic games, hyper-detailed, hyper-realism, sharp frame, cinematic, (background action-packed), lit <lora:lit:1>"));
         randomPrompt.add(new Pair<>("photo of a ", " in Egyptian robes, pharaoh, on the background of the pyramids), hyper-detailed, hyper-realism, sharp shot, cinematic, background action-packed, <lora:xl_more_art-full_v1:1>, <lora:lit:0.5>, effect bokeh"));
