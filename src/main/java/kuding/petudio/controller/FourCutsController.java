@@ -60,6 +60,7 @@ public class FourCutsController {
         if (!colabServerCallService.checkTrainingComplete(bundleId)) {
             return new BaseDto("Training is not yet complete");
         }
+        log.info("animalType = {}", animalType);
         ServiceReturnBundleDto bundle = bundleService.findBundleById(bundleId);
         //prompt는 4개씩만 넘어옴
         List<Pair<Integer, String>> prompts = promptService.makePrompt(selectedItems, selectedBackground, bundle.getRandomName(), animalType);
