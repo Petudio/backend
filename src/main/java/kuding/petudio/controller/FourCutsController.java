@@ -13,6 +13,7 @@ import kuding.petudio.service.ColabServerCallService;
 import kuding.petudio.service.PromptService;
 import kuding.petudio.service.dto.ServiceParamPictureDto;
 import kuding.petudio.service.dto.ServiceReturnBundleDto;
+import kuding.petudio.service.dto.ServiceReturnPictureDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -49,6 +50,13 @@ public class FourCutsController {
         bundleService.addPicturesToBundle(bundleId, pictureDtos);
         ServiceReturnBundleDto bundleDto = bundleService.findBundleById(bundleId);
         BundleReturnDto bundle = DtoConverter.serviceReturnBundleToBundleReturn(bundleDto);
+        return new BaseDto(bundle);
+    }
+
+    @GetMapping("/generate")
+    public BaseDto sendGeneratedPicture(@RequestParam("bundleId") Long bundleId) {
+        ServiceReturnBundleDto findBundle = bundleService.findBundleById(bundleId);
+        BundleReturnDto bundle = DtoConverter.serviceReturnBundleToBundleReturn(findBundle);
         return new BaseDto(bundle);
     }
 
