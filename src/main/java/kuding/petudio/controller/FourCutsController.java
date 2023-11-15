@@ -55,8 +55,7 @@ public class FourCutsController {
 
     @GetMapping("/generate")
     public BaseDto sendGeneratedPicture(@RequestParam("bundleId") Long bundleId) {
-        ServiceReturnBundleDto findBundle = bundleService.findBundleById(bundleId);
-        BundleReturnDto bundle = DtoConverter.serviceReturnBundleToBundleReturn(findBundle);
+        ServiceReturnBundleDto bundle = bundleService.findBundleById(bundleId);
         return new BaseDto(bundle);
     }
 
