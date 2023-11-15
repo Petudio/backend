@@ -66,7 +66,7 @@ public class PromptService {
         promptConverter.put("모자", "hat");
         promptConverter.put("선글라스", "sun glass");
         promptConverter.put("수영", "swimming pool");
-        promptConverter.put("우주", "space, galaxy");
+        promptConverter.put("우주", "Astral Aura, an award-winning");
         promptConverter.put("꽃밭", "flower garden");
         promptConverter.put("피라미드", "pyramid");
         promptConverter.put("동화", "fairy tale");
@@ -78,7 +78,7 @@ public class PromptService {
         randomPrompt.add(new Pair<>("abstract expressionist painting of an award-winning photo of a ", " hyperrealistic <lora:xl_more_art-full_v1:0.7> <lora:zhibi-sdxl:1> zhibi, energetic brushwork, bold colors, abstract forms, expressive, emotional"));
         randomPrompt.add(new Pair<>("Astral Aura, an award-winning photo of a ", ", hyperrealistic <lora:xl_more_art-full_v1:0.5>, astral, colorful aura, vibrant energy"));
         randomPrompt.add(new Pair<>("photo of a ", " athletes, sausage race, olympic games, hyper-detailed, hyper-realism, sharp frame, cinematic, (background action-packed), lit <lora:lit:1>"));
-        randomPrompt.add(new Pair<>("photo of a ", " in Egyptian robes, pharaoh cat, on the background of the pyramids), hyper-detailed, hyper-realism, sharp shot, cinematic, background action-packed, <lora:xl_more_art-full_v1:1>, <lora:lit:0.5>, effect bokeh"));
+        randomPrompt.add(new Pair<>("photo of a ", " in Egyptian robes, pharaoh, on the background of the pyramids), hyper-detailed, hyper-realism, sharp shot, cinematic, background action-packed, <lora:xl_more_art-full_v1:1>, <lora:lit:0.5>, effect bokeh"));
         randomPrompt.add(new Pair<>("photo of a ", " in a kimono with a katana in his hands, against the background of sakura, sakura petals), hyper-detailed, hyper-realism, sharp shot, cinematic, background action-packed, <lora:xl_more_art-full_v1:1>, <lora:lit:0.5>, effect bokeh"));
         randomPrompt.add(new Pair<>("photo of a ", ",with hat,with sunglass, elegant, luxury, clean, smooth, elegant, beautiful, highly detailed, sharp focus, studio photography, realistic, natural light, octane render, adobe lightroom, rule of thirds, symmetrical balance, depth layering, polarizing filter, sense of depth, ai enhanced"));
         randomPrompt.add(new Pair<>("photo of a ", " holding strawberry, elegant, luxury, clean, smooth, elegant, beautiful, highly detailed, sharp focus, studio photography, xf iq 4, 1 5 0 mp, 5 0 mm, iso 2 0 0, 1 / 1 6 0 s, realistic, natural light, octane render, adobe lightroom, rule of thirds, symmetrical balance, depth layering, polarizing filter, sense of depth, ai enhanced"));
