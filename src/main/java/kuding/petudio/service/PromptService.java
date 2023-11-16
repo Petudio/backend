@@ -77,7 +77,7 @@ public class PromptService {
         promptConverter.put("우주", "sakura, sakura petals");
         promptConverter.put("꽃밭", "flower garden");
         promptConverter.put("피라미드", "pyramid");
-        promptConverter.put("동화", "stadium full of spectators");
+        promptConverter.put("동화", "crowded stadium");
     }
 
     @PostConstruct
