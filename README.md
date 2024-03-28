@@ -21,6 +21,11 @@
 <img src="https://github.com/Petudio/backend/assets/75566606/946237b2-458c-4779-bb5e-c2647c5cf09b" width="400" height="400"/>
 <img src="https://github.com/Petudio/backend/assets/75566606/8e843fe0-ee8e-4577-99d2-56ff2384d3e1" width="400" height="400"/>
 
+## 리소스 부족
+- Stable Diffusion v1.5 사용시 고성능 GPU로 작동가능
+- Stable Diffusion sdxl 사용시 TPU 필요
+- 시연 기간 동안 임시로 Google Colab에서 Flask로 서버를 열어 StableDiffusion sdxl AI모델 작동
+
 # 서비스 화면
 <img src="https://github.com/Petudio/backend/assets/75566606/83639c53-287a-4557-9389-db5f61f4cfa6" width="320" height="505"/>
 <img src="https://github.com/Petudio/backend/assets/75566606/b6eb2a4f-9bd8-43bb-9331-72a88d39de94" width="320" height="505"/>
@@ -29,6 +34,8 @@
 <img src="https://github.com/Petudio/backend/assets/75566606/6f38fda7-6f4a-4bec-9b9e-08637dbca72d" width="320" height="505"/>
 <img src="https://github.com/Petudio/backend/assets/75566606/cc6a4b83-4f1b-43f5-8dc6-db44ced20df0" width="320" height="505"/>
 <img src="https://github.com/Petudio/backend/assets/75566606/a4bfde34-7a91-41b9-a68a-0d2840a52e60" width="320" height="505"/>
+
+
 
 
 
