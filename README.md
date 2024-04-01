@@ -1,14 +1,23 @@
-# 🐶 견생네컷 🐱
-> <h2>2023 KU경진대회</h2>
-> <h2>'Customize 4 cuts image With Your Pet'</h2>
-> <h2>자신의 반려동물을 4컷 이미지로 Customizing하며 새로운 경험 제공</h2>
+
+# 🐶 Petudio(견생네컷)
+
+> 2023 KU경진대회 참가작
+> 
+> 
+> **Customize 4 cuts image With Your Pet**
+>
+> **자신의 반려동물을 4컷 이미지로 Customizing하며 새로운 경험 제공**
 
 # 프로젝트 기간
-> 2023. 09 ~ 2023. 12
+> **2023. 09 ~ 2023. 12**
 
 # 프로젝트 소개
 <img src="https://github.com/Petudio/backend/assets/75566606/e3835f8c-dff1-4144-97b3-a801c4c4c51b"/>
+<hr>
 
+# 서버 아키텍처
+<img src="https://github.com/Petudio/backend/assets/75566606/9ee96f98-ed0d-42fe-af26-467600de08ad"/>
+<hr>
 
 # Trouble Shooting
 초기 stable diffusion v1.5 사용하여 이미지를 생성하였지만 생성 이미지의 사용자 만족도가 높지 않았음  
